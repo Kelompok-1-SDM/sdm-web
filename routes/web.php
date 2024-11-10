@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\DosenController;
+use App\Http\Controllers\PenugasanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,8 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::get('/', [DosenController::class, 'index'])->name('dosen.index');
         Route::post('/list', [DosenController::class, 'list']);
     });
+
+    Route::get('/penugasan', [PenugasanController::class, 'index'])->name('penugasan.index');
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
