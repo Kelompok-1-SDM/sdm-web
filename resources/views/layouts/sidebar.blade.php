@@ -19,7 +19,7 @@
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li class="nav-header">Data Pengguna</li>
+            <li class="nav-header">Data Akun</li>
             <li class="nav-item">
                 <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-user"></i>
@@ -32,7 +32,7 @@
                     <p>Manajemen</p>
                 </a>
             </li>
-            <li class="nav-header">Data Penugasan</li>
+            <li class="nav-header">Penugasan</li>
             <li class="nav-item">
                 <a href="{{ url('/penugasan') }}" class="nav-link {{ $activeMenu == 'penugasan' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-file"></i>
