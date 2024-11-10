@@ -30,7 +30,7 @@
                     @csrf
                     <div class="input-group mb-3">
                         <input type="text" id="nip" name="nip" class="form-control"
-                            placeholder="nip">
+                            placeholder="Nip">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>

@@ -3,50 +3,64 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
-    public function login()
+    protected $apiUrl;
+
+    public function __construct()
     {
-        if (Auth::check()) { // jika sudah login, maka redirect ke halaman home
-            return redirect('/');
-        }
+        $this->apiUrl = env('API_BASE_URL', "ini harus url");
+    }
+
+    public function index()
+    {
         return view('auth.login');
     }
 
-    public function postlogin(Request $request)
+    public function postLogin(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            $credentials = $request->only('username', 'password');
-
-            // if (Auth::attempt($credentials)) {
-            //     // session([
-            //     //     'profile_img_path' => Auth::user()->file_profil,
-            //     //     'user_id' => Auth::user()->user_id
-            //     // ]);
-            //     if (Auth::user()->image_profile != "") {
-            //         session(['profile_img_path' => Auth::user()->image_profile]);
-            //     }
-            // session(['nip' => Auth::user()->nip]);
-            return response()->json([
-                'status' => true,
-                'message' => 'Login Berhasil',
-                'redirect' => url('/dashboard')
+            $response = Http::post("{$this->apiUrl}/api/login", [
+                'nip' => $request->nip,
+                'password' => $request->password,
             ]);
-            // }
-            // return response()->json([
-            //     'status' => false,
-            //     'message' => 'Login Gagal'
-            // ]);
+
+            if ($response->successful()) {
+                $token = $response->json('data.token');
+                $expiry = now()->addSeconds(config('services.api.token_lifetime', 604800));
+
+                Cache::put('api_jwt_token', $token, $expiry);
+
+                $responseUser = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
+                    'uid' => '',
+                ]);
+                Cache::put('user_cache', $responseUser->json('data'), $expiry);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Login Berhasil',
+                    'redirect' => url('/')
+                ]);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => $response->json('message')
+            ]);
         }
+
         return redirect('login');
     }
+
+
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Cache::clear('api_jwt_token');
+        Cache::clear('user_cache');
+
         return redirect('login');
     }
 }
