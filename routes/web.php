@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\DosenController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,3 +33,5 @@ Route::middleware(['jwt.required'])->group(function () {
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
+
+Route::get('/manajemen', [ManajemenController::class, 'index']);
