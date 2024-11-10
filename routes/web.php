@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,3 +22,5 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware(['auth'])->group(function(){
 // masukkan rooute yang perlu diautentikasi disini
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
