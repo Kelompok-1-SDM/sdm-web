@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\PenugasanModel;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
 
-class PenugasanController extends Controller
+class KegiatanController extends Controller
 {
     protected $apiUrl;
 
