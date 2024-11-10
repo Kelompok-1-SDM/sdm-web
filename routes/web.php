@@ -30,11 +30,14 @@ Route::middleware(['jwt.required'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
 
     Route::group(['prefix' => 'dosen'], function () {
-        Route::get('/', [DosenController::class, 'index'])->name('dosen.index');
+        Route::get('/', [DosenController::class, 'index']);
         Route::post('/list', [DosenController::class, 'list']);
+    });
+
+    Route::group(['prefix' => 'manajemen'], function () {
+        Route::get('/', [ManajemenController::class, 'index']);
+        Route::post('/list', [ManajemenController::class, 'list']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
-
-Route::get('/manajemen', [ManajemenController::class, 'index']);

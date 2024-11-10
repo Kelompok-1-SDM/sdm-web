@@ -67,7 +67,6 @@
     {{-- CDN SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
         function modalAction(url = '') {
@@ -83,7 +82,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('dosen/list') }}",
+                    url: "{{ url('manajemen/list') }}",
                     type: "POST",
                 },
                 columns: [{

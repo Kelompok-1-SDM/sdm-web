@@ -38,7 +38,8 @@ class AuthController extends Controller
                 $responseUser = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
                     'uid' => '',
                 ]);
-                Cache::put('user_cache', $responseUser->json('data'), $expiry);
+                $apa = $responseUser->json('data');
+                session(['user_id' => $apa['userId'], 'profil_img' => $apa['profileImage']]);
 
                 return response()->json([
                     'status' => true,
