@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login User</title>
+    <title>Lupa Password</title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -29,39 +29,33 @@
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="text" id="nip" name="nip" class="form-control"
-                            placeholder="nip">
+                        <input type="password" id="password_baru" name="password_baru" class="form-control"
+                            placeholder="password baru">
                         <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
+                            <div class="input- group-text">
+                                <span class="fas fa-lock"></span>
                             </div>
                         </div>
-                        <small id="error-nip" class="error-text text-danger"></small>
+                        <small id="error-password_baru" class="error-text text-danger"></small>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" id="password" name="password" class="form-control"
-                            placeholder="Password">
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                            placeholder="confirm password">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
                             </div>
                         </div>
-                        <small id="error-password" class="error-text text-danger"></small>
+                        <small id="error-confirm_password" class="error-text text-danger"></small>
                     </div>
                     <div class="row">
-                        <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" id="remember"><label for="remember">Remember Me</label>
-                            </div>
-                        </div>
                         <!-- /.col -->
                         <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            <button type="submit" class="btn btn-primary btn-block">Send</button>
                         </div>
                         <!-- /.col -->
                     </div>
                 </form>
-                <a href="{{ url('resetPassword') }}" class="text-center">Lupa Password</a>
             </div>
             <!-- /.card-body -->
         </div>
@@ -91,32 +85,38 @@
         $(document).ready(function() {
             $("#form-login").validate({
                 rules: {
-                    nip: {
-                        required: true,
-                        minlength: 4,
-                        // maxlength: 20
-                    },
-                    password: {
+                    password_baru: {
                         required: true,
                         minlength: 6,
                         maxlength: 20
+                    },
+                    confirm_password: {
+                        required: true,
+                        minlength: 6,
+                        maxlength: 20,
+                        equalTo: "#password_baru"
                     }
                 },
-                submitHandler: function(form) { // ketika valid, maka bagian yg akan dijalankan 
+                messages: {
+                    confirm_password: {
+                        equalTo: "Password confirmation does not match."
+                    }
+                },
+                submitHandler: function(form) {
                     $.ajax({
                         url: form.action,
                         type: form.method,
                         data: $(form).serialize(),
                         success: function(response) {
-                            if (response.status) { // jika sukses 
+                            if (response.status) {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message,
+                                    title: 'Password berhasil diubah',
+                                    text: 'Anda akan diarahkan ke halaman login.',
                                 }).then(function() {
-                                    window.location = response.redirect;
+                                    window.location = "{{ url('login') }}"; // Redirect to login page
                                 });
-                            } else { // jika error 
+                            } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {
                                     $('#error-' + prefix).text(val[0]);
