@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ManajemenController;
+use App\Http\Controllers\DosenController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,18 +18,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::pattern('id', '[0-9]+');
-Route::get('login', [AuthController::class, 'login'])->name('login');
-Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('resetPassword', [AuthController::class, 'ForgotPassword'])->name('resetPassword');
 Route::post('resetPassword', [AuthController::class, 'ResetPassword']);
-Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
-Route::middleware(['auth'])->group(function () {
-    // masukkan rooute yang perlu diautentikasi disini
+Route::middleware(['check.jwt'])->group(function () {
+
+    Route::get('login', [AuthController::class, 'index'])->name('login');
+    Route::post('login', [AuthController::class, 'postlogin']);
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['jwt.required'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
 
-Route::group(['prefix' => 'user'], function () {
-    // Menampilkan daftar user
-    Route::get('/', [UserController::class, 'index'])->name('dosen.index');
+    Route::group(['prefix' => 'dosen'], function () {
+        Route::get('/', [DosenController::class, 'index'])->name('dosen.index');
+        Route::post('/list', [DosenController::class, 'list']);
+    });
+
+    Route::get('logout', [AuthController::class, 'logout']);
 });
+
+Route::get('/manajemen', [ManajemenController::class, 'index']);
