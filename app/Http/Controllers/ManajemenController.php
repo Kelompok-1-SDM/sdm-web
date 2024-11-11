@@ -21,7 +21,7 @@ class ManajemenController extends Controller
     {
         $breadcrumb = (object) [
             'title' => 'Daftar Manajemen',
-            'list' => ['Data Manajemen', 'Manajemen']
+            'list' => ['Data Pengguna', 'Manajemen']
         ];
 
         $page = (object) [

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -39,7 +40,7 @@ class AuthController extends Controller
                     'uid' => '',
                 ]);
                 $apa = $responseUser->json('data');
-                session(['user_id' => $apa['userId'], 'profil_img' => $apa['profileImage']]);
+                session(['user_id' => $apa['userId'], 'role' => $apa['role'], 'profil_img' => $apa['profileImage']]);
 
                 return response()->json([
                     'status' => true,
@@ -89,6 +90,7 @@ class AuthController extends Controller
     {
         Cache::clear('api_jwt_token');
         Cache::clear('user_cache');
+        Session::flush();
 
         return redirect('login');
     }

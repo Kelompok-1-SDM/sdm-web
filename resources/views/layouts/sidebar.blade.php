@@ -19,7 +19,7 @@
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li class="nav-header">Data Akun</li>
+            <li class="nav-header">Data Pengguna</li>
             <li class="nav-item">
                 <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-user"></i>
@@ -32,11 +32,23 @@
                     <p>Manajemen</p>
                 </a>
             </li>
-            <li class="nav-header">Penugasan</li>
             <li class="nav-item">
-                <a href="{{ url('/penugasan') }}" class="nav-link {{ $activeMenu == 'penugasan' ? 'active' : '' }} ">
+                <a href="{{ url('/admin') }}" class="nav-link {{ $activeMenu == 'admin' ? 'active' : '' }}">
+                    <i class="nav-icon far fa-user"></i>
+                    <p>Admin</p>
+                </a>
+            </li>
+            <li class="nav-header">Data Kegiatan</li>
+            <li class="nav-item">
+                <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-file"></i>
-                    <p>Penugasan</p>
+                    <p>Kegiatan</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/kompetensi') }}" class="nav-link {{ $activeMenu == 'kompetensi' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-graduation-cap"></i>
+                    <p>Kompetensi</p>
                 </a>
             </li>
             <li class="nav-item">

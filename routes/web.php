@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\KompetensiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,8 +42,19 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::post('/list', [ManajemenController::class, 'list']);
     });
 
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/', [AdminController::class, 'index']);
+        Route::post('/list', [AdminController::class, 'list']);
+    });
+
     Route::group(['prefix' => 'kegiatan'], function () {
         Route::get('/', [KegiatanController::class, 'index']);
+        Route::post('/list', [KegiatanController::class, 'list']);
+    });
+
+    Route::group(['prefix' => 'kompetensi'], function () {
+        Route::get('/', [KompetensiController::class, 'index']);
+        Route::post('/list', [KompetensiController::class, 'list']);
     });
 
 

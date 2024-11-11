@@ -5,14 +5,13 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/user/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    User</button>
-                <a href="{{ url('/user/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
-                    Export User (Excel)</a>
-                <a href="{{ url('/user/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i>
-                    Export User (PDF)</a>
-                <button onclick="modalAction('{{ url('user/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
-                    Ajax</button>
+                <button onclick="modalAction('{{ url('/dosen/import') }}')" class="btn btn-sm btn-info mt-1">Import
+                    Dosen</button>
+                <a href="{{ url('/dosen/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
+                    Export Dosen (Excel)</a>
+                <a href="{{ url('/dosen/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i>
+                    Export Dosen (PDF)</a>
+                <button onclick="modalAction('{{ url('dosen/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -42,14 +41,13 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_dosen">
                 <thead>
                     <tr>
                         <th>Nomor</th>
                         <th>NIP</th>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th>Role</th>
                         <th>Image Profile</th>
                         <th>Aksi</th>
                     </tr>
@@ -77,9 +75,9 @@
         }
 
         // DataTables Server-Side
-        var dataUser;
+        var dataDosen;
         $(document).ready(function() {
-            dataUser = $('#table_user').DataTable({
+            dataDosen = $('#table_dosen').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -111,12 +109,6 @@
                         searchable: true
                     },
                     {
-                        data: "role",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
                         data: "profileImage",
                         className: "text-center",
                         orderable: true,
@@ -125,7 +117,7 @@
                             if (data) {
                                 return "<img class='direct-chat-img' style='float: none;' src='" +
                                     data +
-                                    "' alt='message user image'>";
+                                    "' alt='message dosen image'>";
                             }
                             return data;
                         }

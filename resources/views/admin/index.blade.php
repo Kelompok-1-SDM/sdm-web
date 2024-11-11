@@ -5,16 +5,13 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/manajemen/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Manajemen</button>
-                <a href="{{ url('/manajemen/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i
-                        class="fa fa-file-excel"></i>
-                    Export Manajemen (Excel)</a>
-                <a href="{{ url('/manajemen/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i
-                        class="fa fa-file-pdf"></i>
-                    Export Manajemen (PDF)</a>
-                <button onclick="modalAction('{{ url('manajemen/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('/admin/import') }}')" class="btn btn-sm btn-info mt-1">Import
+                    Admin</button>
+                <a href="{{ url('/admin/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
+                    Export Admin (Excel)</a>
+                <a href="{{ url('/admin/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i>
+                    Export Admin (PDF)</a>
+                <button onclick="modalAction('{{ url('admin/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -44,7 +41,7 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_manajemen">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_admin">
                 <thead>
                     <tr>
                         <th>Nomor</th>
@@ -68,6 +65,7 @@
     {{-- CDN SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
         function modalAction(url = '') {
@@ -77,13 +75,13 @@
         }
 
         // DataTables Server-Side
-        var dataManajemen;
+        var dataAdmin;
         $(document).ready(function() {
-            dataManajemen = $('#table_manajemen').DataTable({
+            dataAdmin = $('#table_admin').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('manajemen/list') }}",
+                    url: "{{ url('admin/list') }}",
                     type: "POST",
                 },
                 columns: [{
@@ -119,7 +117,7 @@
                             if (data) {
                                 return "<img class='direct-chat-img' style='float: none;' src='" +
                                     data +
-                                    "' alt='message manajemen image'>";
+                                    "' alt='message admin image'>";
                             }
                             return data;
                         }
