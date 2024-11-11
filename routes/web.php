@@ -20,11 +20,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::pattern('id', '[0-9]+');
+// Route::pattern('id', '[a-zA-Z0-9]{25}');
 Route::get('resetPassword', [AuthController::class, 'ForgotPassword'])->name('resetPassword');
 Route::post('resetPassword', [AuthController::class, 'ResetPassword']);
 Route::middleware(['check.jwt'])->group(function () {
-
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('login', [AuthController::class, 'postlogin']);
 });
@@ -50,6 +49,7 @@ Route::middleware(['jwt.required'])->group(function () {
     Route::group(['prefix' => 'kegiatan'], function () {
         Route::get('/', [KegiatanController::class, 'index']);
         Route::post('/list', [KegiatanController::class, 'list']);
+        Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajax']);
     });
 
     Route::group(['prefix' => 'kompetensi'], function () {
