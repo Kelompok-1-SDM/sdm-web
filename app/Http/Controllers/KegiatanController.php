@@ -43,11 +43,11 @@ class KegiatanController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
                 ->addColumn('aksi', function ($kegiatan) {  // menambahkan kolom aksi  
-                    $btn  = '<button onclick="modalAction(\'' . url('/user/' . $kegiatan['kegiatanId'] .
+                    $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
                         '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $kegiatan['kegiatanId'] .
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
                         '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $kegiatan['kegiatanId'] .
+                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
                         '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
 
                     return $btn;
@@ -55,5 +55,14 @@ class KegiatanController extends Controller
                 ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html  
                 ->make(true);
         }
+    }
+
+    public function show_ajax(string $id)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
+            'uid' => $id
+        ]);
+        $dat = $response->json('data');
+        return view('kegiatan.show_ajax', ['kegiatan' => $dat]);
     }
 }
