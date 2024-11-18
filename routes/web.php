@@ -49,7 +49,9 @@ Route::middleware(['jwt.required'])->group(function () {
     Route::group(['prefix' => 'kegiatan'], function () {
         Route::get('/', [KegiatanController::class, 'index']);
         Route::post('/list', [KegiatanController::class, 'list']);
-        Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajax']);
+        Route::get('/{id}/detail', [KegiatanController::class, 'detailKegiatan']);
+        // Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajax']);
+        Route::post('/detailUser', [KegiatanController::class, 'detailUser']);
     });
 
     Route::group(['prefix' => 'kompetensi'], function () {
