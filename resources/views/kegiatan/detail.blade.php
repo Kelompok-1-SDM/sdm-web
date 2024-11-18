@@ -79,6 +79,91 @@
         </div>
     </div>
 
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-lg-7 connectedSortable">
+            <!-- TO DO List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="ion ion-clipboard mr-1"></i>
+                        Agenda
+                    </h3>
+
+                    <div class="card-tools">
+                        <ul class="pagination pagination-sm">
+                            <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
+                            <li class="page-item"><a href="#" class="page-link">1</a></li>
+                            <li class="page-item"><a href="#" class="page-link">2</a></li>
+                            <li class="page-item"><a href="#" class="page-link">3</a></li>
+                            <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <ul class="todo-list" data-widget="todo-list">
+                        @php $apa = 0; @endphp
+                        @foreach ($data['agenda'] as $item)
+                            <li>
+                                <!-- checkbox -->
+                                <div class="icheck-primary d-inline ml-2">
+                                    <input type="checkbox" value="" name="todo{{ $apa }}"
+                                        id="todoCheck{{ $apa }}">
+                                    <label for="todoCheck{{ $apa }}"></label>
+                                </div>
+                                <!-- todo text -->
+                                <span class="text">{{ $item['namaAgenda'] }}</span>
+                                <!-- Emphasis label -->
+                                <small class="badge badge-warning">
+                                    <i class="far fa-clock"></i>
+                                    {{ date_format(date_create($item['jadwalAgenda']), 'd F Y, H:i') }}
+                                </small>
+                                <!-- General tools such as edit or delete-->
+                                <div class="tools">
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash-o"></i>
+                                </div>
+                            </li>
+                            @php $apa++; @endphp
+                        @endforeach
+
+                    </ul>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add
+                        item</button>
+                </div>
+            </div>
+            <!-- /.card -->
+        </section>
+        <!-- /.Left col -->
+        <!-- right col (We are only adding the ID to make the widgets sortable)-->
+        <section class="col-lg-5 connectedSortable">
+
+            <!-- /.card -->
+
+            <!-- solid sales graph -->
+            <!-- Right col (solid sales graph) -->
+            <div class="card bg-gradient-white">
+                <div class="card-header border-0">
+                    <h3 class="card-title text-dark">
+                        <i class="fas fa-th mr-1"></i>
+                        Lampiran
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <canvas class="chart" id="line-chart"
+                        style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+            </div>
+
+            <!-- /.card -->
+        </section>
+        <!-- right col -->
+    </div>
+
     {{-- Modal untuk Ajax --}}
     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
         data-width="75%" aria-hidden="true"></div>
