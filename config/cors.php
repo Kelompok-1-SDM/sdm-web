@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*', env('API_BASE_URL')],
 
     'allowed_origins_patterns' => [],
 

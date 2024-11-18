@@ -61,14 +61,14 @@
             <!-- Brand Logo -->
             <button onclick="modalAction('{{ url('/user/' . session('user_id') . '/edit_ajax') }}')"
                 class="btn brand-link">
-                @if (session()->has('profile_img_path'))
-                    <img id="profile-picture" src="{{ asset('storage/' . session('profile_img_path')) }}"
-                        alt="Profile Picture" class="brand-image img-circle elevation-3">
+                @if (session()->has('profil_img'))
+                    <img id="profile-picture" src="{{ session('profil_img') }}" alt="Profile Picture"
+                        class="brand-image img-circle elevation-3">
                 @else
                     <img src="{{ asset('adminlte/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo"
                         class="brand-image img-circle elevation-3" style="opacity: .8">
                 @endif
-                <span class="brand-text font-weight-light">PWL - Starter Code</span>
+                <span class="brand-text font-weight-light">Manajemen SDM JTI</span>
             </button>
 
             {{-- <button onclick="modalAction('{{ url('/user/' . session('user_id') . '/edit_ajax') }}')"

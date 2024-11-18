@@ -1,14 +1,12 @@
 <?php
 
-// app/Http/Controllers/ManajemenController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
 
-class ManajemenController extends Controller
+class KompetensiController extends Controller
 {
     protected $apiUrl;
 
@@ -20,41 +18,32 @@ class ManajemenController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Manajemen',
-            'list' => ['Data Pengguna', 'Manajemen']
+            'title' => 'Daftar Kompetensi',
+            'list' => ['Data Kegiatan', 'Kompetensi']
         ];
-
         $page = (object) [
-            'title' => 'Daftar manajemen yang terdaftar dalam sistem'
+            'title' => 'Daftar kompetensi yang terdaftar dalam sistem',
         ];
-
-
-        $activeMenu = 'manajemen';
-
-        return view('manajemen.index', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'activeMenu' => $activeMenu
-        ]);
+        $activeMenu = 'kompetensi'; // set menu yang sedang aktif
+        // Anda dapat menambahkan logika di sini
+        return view('kompetensi.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
     public function list(Request $request)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
-            'role' => 'manajemen'
-        ]);
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi");
 
         // dd($response->json('data'));
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
                 ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
-                ->addColumn('aksi', function ($dosen) {  // menambahkan kolom aksi  
-                    $btn  = '<button onclick="modalAction(\'' . url('/user/' . $dosen['userId'] .
+                ->addColumn('aksi', function ($kompetensi) {  // menambahkan kolom aksi  
+                    $btn  = '<button onclick="modalAction(\'' . url('/user/' . $kompetensi['kompetensiId'] .
                         '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $dosen['userId'] .
+                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $kompetensi['kompetensiId'] .
                         '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $dosen['userId'] .
+                    $btn .= '<button onclick="modalAction(\'' . url('/user/' . $kompetensi['kompetensiId'] .
                         '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
 
                     return $btn;

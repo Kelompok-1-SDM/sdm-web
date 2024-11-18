@@ -5,11 +5,11 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/dosen/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Dosen</button>
-                <a href="{{ url('/dosen/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
-                    Export Dosen (Excel)</a>
-                <button onclick="modalAction('{{ url('dosen/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('/admin/import') }}')" class="btn btn-sm btn-info mt-1">Import
+                    Admin</button>
+                <a href="{{ url('/admin/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
+                    Export Admin (Excel)</a>
+                <button onclick="modalAction('{{ url('admin/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -39,7 +39,7 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_dosen">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_admin">
                 <thead>
                     <tr>
                         <th>Nomor</th>
@@ -73,13 +73,13 @@
         }
 
         // DataTables Server-Side
-        var dataDosen;
+        var dataAdmin;
         $(document).ready(function() {
-            dataDosen = $('#table_dosen').DataTable({
+            dataAdmin = $('#table_admin').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('dosen/list') }}",
+                    url: "{{ url('admin/list') }}",
                     type: "POST",
                 },
                 columns: [{
@@ -115,7 +115,7 @@
                             if (data) {
                                 return "<img class='direct-chat-img' style='float: none;' src='" +
                                     data +
-                                    "' alt='message dosen image'>";
+                                    "' alt='message admin image'>";
                             }
                             return data;
                         }

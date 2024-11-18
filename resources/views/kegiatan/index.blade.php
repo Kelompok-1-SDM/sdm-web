@@ -5,11 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/dosen/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Dosen</button>
-                <a href="{{ url('/dosen/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
-                    Export Dosen (Excel)</a>
-                <button onclick="modalAction('{{ url('dosen/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -39,14 +35,15 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_dosen">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_kegiatan">
                 <thead>
                     <tr>
                         <th>Nomor</th>
-                        <th>NIP</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Image Profile</th>
+                        <th>Judul kegiatan</th>
+                        <th>Tanggal</th>
+                        <th>Tipe kegiatan</th>
+                        <th>Lokasi</th>
+                        <th>Deskripsi</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -73,13 +70,13 @@
         }
 
         // DataTables Server-Side
-        var dataDosen;
+        var dataKegiatan;
         $(document).ready(function() {
-            dataDosen = $('#table_dosen').DataTable({
+            dataKegiatan = $('#table_kegiatan').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('dosen/list') }}",
+                    url: "{{ url('kegiatan/list') }}",
                     type: "POST",
                 },
                 columns: [{
@@ -89,41 +86,52 @@
                         searchable: false
                     },
                     {
-                        data: "nip",
+                        data: "judulKegiatan",
                         className: "text-center",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "nama",
+                        data: "tanggal",
                         className: "text-center",
                         orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "email",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "profileImage",
-                        className: "text-center",
-                        orderable: true,
+                        width: "10%",
                         searchable: true,
                         render: function(data, type, row) {
                             if (data) {
-                                return "<img class='direct-chat-img' style='float: none;' src='" +
-                                    data +
-                                    "' alt='message dosen image'>";
+                                var date = new Date(data);
+                                var year = date.getFullYear();
+                                var month = ("0" + (date.getMonth() + 1)).slice(-
+                                    2); // Add leading zero
+                                var day = ("0" + date.getDate()).slice(-2); // Add leading zero
+                                return year + "-" + month + "-" + day; // Format as YYYY-MM-DD
                             }
-                            return data;
+                            return data; // Return original value if no data
                         }
+                    },
+                    {
+                        data: "tipeKegiatan",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "lokasi",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "deskripsi",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true,
                     },
                     {
                         data: "aksi",
                         className: "text-center",
                         orderable: false,
+                        width: "5%",
                         searchable: false
                     }
                 ]

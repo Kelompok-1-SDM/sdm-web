@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\DosenController;
-use App\Http\Controllers\PenugasanController;
+use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\KompetensiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +20,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::pattern('id', '[0-9]+');
+// Route::pattern('id', '[a-zA-Z0-9]{25}');
+Route::get('resetPassword', [AuthController::class, 'ForgotPassword'])->name('resetPassword');
+Route::post('resetPassword', [AuthController::class, 'ResetPassword']);
 Route::middleware(['check.jwt'])->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('login', [AuthController::class, 'postlogin']);
@@ -28,13 +32,33 @@ Route::middleware(['jwt.required'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
 
     Route::group(['prefix' => 'dosen'], function () {
-        Route::get('/', [DosenController::class, 'index'])->name('dosen.index');
+        Route::get('/', [DosenController::class, 'index']);
         Route::post('/list', [DosenController::class, 'list']);
     });
 
-    Route::get('/penugasan', [PenugasanController::class, 'index'])->name('penugasan.index');
+    Route::group(['prefix' => 'manajemen'], function () {
+        Route::get('/', [ManajemenController::class, 'index']);
+        Route::post('/list', [ManajemenController::class, 'list']);
+    });
+
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/', [AdminController::class, 'index']);
+        Route::post('/list', [AdminController::class, 'list']);
+    });
+
+    Route::group(['prefix' => 'kegiatan'], function () {
+        Route::get('/', [KegiatanController::class, 'index']);
+        Route::post('/list', [KegiatanController::class, 'list']);
+        Route::get('/{id}/detail', [KegiatanController::class, 'detailKegiatan']);
+        // Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajax']);
+        Route::post('/detailUser', [KegiatanController::class, 'detailUser']);
+    });
+
+    Route::group(['prefix' => 'kompetensi'], function () {
+        Route::get('/', [KompetensiController::class, 'index']);
+        Route::post('/list', [KompetensiController::class, 'list']);
+    });
+
 
     Route::get('logout', [AuthController::class, 'logout']);
 });
-
-Route::get('/manajemen', [ManajemenController::class, 'index']);

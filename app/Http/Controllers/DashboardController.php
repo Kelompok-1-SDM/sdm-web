@@ -21,6 +21,8 @@ class DashboardController extends Controller
             'title' => 'Dashboard Admin',
             'list' => ['Home', 'Dashboard']
         ];
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user/homepage-web");
+        $data = $response->json('data');
 
         $page = (object) [
             'title' => 'Dashboard admin'
@@ -28,6 +30,6 @@ class DashboardController extends Controller
 
         $activeMenu = 'dashboard';
 
-        return view('dashboard', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
+        return view('dashboard', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'data' => $data]);
     }
 }
