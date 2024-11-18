@@ -5,8 +5,8 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="window.location='{{ url('/penugasan/import') }}'" class="btn btn-sm btn-success mt-1">Import</button>
-                <button onclick="window.location='{{ url('/penugasan/create') }}'" class="btn btn-sm btn-success">Tambah</button>
+                <button onclick="window.location='{{ url('/penugasan/import') }}'" class="btn btn-primary">Import</button>
+                <button onclick="window.location='{{ url('/penugasan/create') }}'" class="btn btn-primary">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -16,8 +16,7 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-
-            <table class="table table-bordered table-striped table-hover table-sm">
+            <table id="table-penugasan" class="table table-bordered table-striped table-hover table-sm">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -29,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @foreach ($penugasan as $item)
+                    @foreach($penugasan as $item)
                         <tr>
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->nama }}</td>
@@ -37,18 +36,28 @@
                             <td>{{ $item->lokasi }}</td>
                             <td>{{ $item->kompetensi }}</td>
                             <td>
-                                <a href="{{ url('/penugasan/' . $item->id) }}" class="btn btn-info btn-sm">Detail</a>
-                                <a href="{{ url('/penugasan/' . $item->id . '/edit') }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ url('/penugasan/' . $item->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                                </form>
+                                <!-- Detail button -->
+                                <button onclick="window.location='{{ url('/penugasan/'.$item->id) }}'" class="btn btn-info btn-sm">Detail</button>
+                                <!-- Edit button -->
+                                <button onclick="modalAction('{{ url('/penugasan/'.$item->id.'/edit') }}')" class="btn btn-warning btn-sm">Edit</button>
+                                <!-- Delete button -->
+                                <button onclick="if(confirm('Apakah Anda yakin ingin menghapus penugasan ini?')) { window.location='{{ url('/penugasan/'.$item->id.'/delete') }}'; }" class="btn btn-danger btn-sm">Hapus</button>
                             </td>
                         </tr>
-                    @endforeach --}}
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="75%"></div>
 @endsection
+
+@push('js')
+<script>
+    function modalAction(url = '') {
+        $('#myModal').load(url, function() {
+            $('#myModal').modal('show');
+        });
+    }
+</script>
+@endpush

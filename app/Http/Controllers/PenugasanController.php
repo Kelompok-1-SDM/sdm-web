@@ -17,25 +17,48 @@ class PenugasanController extends Controller
     }
 
     public function index()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Data Penugasan',
-            'list' => ['Home', 'Penugasan']
-        ];
-        $page = (object) [
-            'title' => 'Daftar penugasan yang terdaftar dalam sistem'
-        ];
-        $activeMenu = 'penugasan';
-        // $penugasan = PenugasanModel::all();
+{
+    $breadcrumb = (object) [
+        'title' => 'Data Penugasan',
+        'list' => ['Home', 'Penugasan']
+    ];
+    $page = (object) [
+        'title' => 'Data Penugasan'
+    ];
+    $activeMenu = 'penugasan';
 
-        return view('penugasan.index', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            //'penugasan' => $penugasan, 
-            'activeMenu' => $activeMenu
-        ]);
-    }
+    // New dummy data
+    $penugasan = [
+        (object)[
+            'id' => 1,
+            'nama' => 'Penugasan A',
+            'jadwal' => '2024-11-20 10:00:00',
+            'lokasi' => 'Jakarta',
+            'kompetensi' => 'Manajemen Proyek',
+        ],
+        (object)[
+            'id' => 2,
+            'nama' => 'Penugasan B',
+            'jadwal' => '2024-11-21 14:00:00',
+            'lokasi' => 'Bandung',
+            'kompetensi' => 'Pengembangan Sistem',
+        ],
+        (object)[
+            'id' => 3,
+            'nama' => 'Penugasan C',
+            'jadwal' => '2024-11-22 09:00:00',
+            'lokasi' => 'Surabaya',
+            'kompetensi' => 'Analisis Data',
+        ],
+    ];
 
+    return view('penugasan.index', [
+        'breadcrumb' => $breadcrumb,
+        'page' => $page,
+        'penugasan' => $penugasan,
+        'activeMenu' => $activeMenu
+    ]);
+}
     public function list(Request $request)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
