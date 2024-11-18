@@ -35,11 +35,7 @@ class AuthController extends Controller
                 $expiry = now()->addSeconds(config('services.api.token_lifetime', 604800));
 
                 Cache::put('api_jwt_token', $token, $expiry);
-
-                $responseUser = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
-                    'uid' => '',
-                ]);
-                $apa = $responseUser->json('data');
+                $apa = $response->json('data');
                 session(['user_id' => $apa['userId'], 'role' => $apa['role'], 'profil_img' => $apa['profileImage']]);
 
                 return response()->json([

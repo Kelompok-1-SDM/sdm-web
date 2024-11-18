@@ -5,12 +5,6 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/kompetensi/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Kompetensi</button>
-                <a href="{{ url('/kompetensi/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
-                    Export Kompetensi (Excel)</a>
-                <a href="{{ url('/kompetensi/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i>
-                    Export Kompetensi (PDF)</a>
                 <button onclick="modalAction('{{ url('kompetensi/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>

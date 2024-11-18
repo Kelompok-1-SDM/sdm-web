@@ -43,12 +43,8 @@ class KegiatanController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
                 ->addColumn('aksi', function ($kegiatan) {  // menambahkan kolom aksi  
-                    $btn  = '<a href="' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
-                        '/detail') . '" class="btn btn-info btn-sm">Detail</a> ';
-                    // $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
-                    //     '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    // $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
-                    //     '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                    $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
+                        '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
 
                     return $btn;
                 })
