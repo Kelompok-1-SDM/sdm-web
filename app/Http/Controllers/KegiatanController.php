@@ -45,10 +45,6 @@ class KegiatanController extends Controller
                 ->addColumn('aksi', function ($kegiatan) {  // menambahkan kolom aksi  
                     $btn  = '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
                         '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
-                        '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/kegiatan/' . $kegiatan['kegiatanId'] .
-                        '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
 
                     return $btn;
                 })

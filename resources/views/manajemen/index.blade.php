@@ -7,12 +7,9 @@
             <div class="card-tools">
                 <button onclick="modalAction('{{ url('/manajemen/import') }}')" class="btn btn-sm btn-info mt-1">Import
                     Manajemen</button>
-                <a href="{{ url('/manajemen/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i
+                <a href="{{ env('API_BASE_URL') . '/api/user/export?role=dosen' }}" class="btn btn-sm btn-primary mt-1"><i
                         class="fa fa-file-excel"></i>
                     Export Manajemen (Excel)</a>
-                <a href="{{ url('/manajemen/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i
-                        class="fa fa-file-pdf"></i>
-                    Export Manajemen (PDF)</a>
                 <button onclick="modalAction('{{ url('manajemen/create_ajax') }}')"
                     class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>

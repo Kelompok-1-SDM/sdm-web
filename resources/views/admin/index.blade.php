@@ -9,8 +9,6 @@
                     Admin</button>
                 <a href="{{ url('/admin/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
                     Export Admin (Excel)</a>
-                <a href="{{ url('/admin/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i>
-                    Export Admin (PDF)</a>
                 <button onclick="modalAction('{{ url('admin/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
