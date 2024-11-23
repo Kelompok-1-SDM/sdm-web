@@ -83,14 +83,10 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::get('/', [KegiatanController::class, 'index']);
         Route::post('/list', [KegiatanController::class, 'list']);
         Route::get('/{id}/detail', [KegiatanController::class, 'detailKegiatan']);
-
-        Route::get('/anggota_show_ajax', [KegiatanController::class, 'anggota_show_ajax']);
-        Route::get('/{id}/anggota_create_ajax', [KegiatanController::class, 'anggota_create_ajax']);
-        Route::post('/{id}/anggota_store_ajax', [KegiatanController::class, 'anggota_store_ajax']);
-        Route::get('/{id}/anggota_edit_ajax', [KegiatanController::class, 'anggota_edit_ajax']);
-        Route::post('/{id}/anggota_update_ajax', [KegiatanController::class, 'anggota_update_ajax']);
-        Route::get('/{id}/anggota_delete_ajax', [KegiatanController::class, 'anggota_confirm_ajax']);
-        Route::delete('/{id}/anggota_delete_ajax', [KegiatanController::class, 'anggota_delete_ajax']);
+        // Route::get('/{id}/show_ajax', [KegiatanController::class, 'show_ajax']);
+        Route::post('/detailUser', [KegiatanController::class, 'detailUser']);
+        Route::get('{id}/edit_ajax', [KegiatanController::class, 'edit_ajax']);
+        Route::get('/{id}/delete_ajax', [KegiatanController::class, 'confirm_ajax']);
     });
 
     Route::group(['prefix' => 'kompetensi'], function () {
