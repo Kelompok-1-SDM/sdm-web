@@ -6,9 +6,9 @@
             <h3 class="card-title">
                 {{ $data['judulKegiatan'] . ' - ' . date_format(date_create($data['tanggal']), 'd F Y, H:i') }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
+                <button onclick="modalAction('{{ url('kegiatan/'.$data['kegiatanId'].'/edit_ajax') }}')"
                     class="btn btn-sm btn-warning mt-1">Edit</button>
-                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
+                <button onclick="modalAction('{{ url('kegiatan/'.$data['kegiatanId'].'/delete_ajax') }}')"
                     class="btn btn-sm btn-danger mt-1">Hapus</button>
             </div>
         </div>
