@@ -48,7 +48,6 @@
                         <th>NIP</th>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th>Image Profile</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -78,7 +77,7 @@
         $(document).ready(function() {
             dataManajemen = $('#table_manajemen').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ url('manajemen/list') }}",
                     type: "POST",
@@ -106,20 +105,6 @@
                         className: "text-center",
                         orderable: true,
                         searchable: true
-                    },
-                    {
-                        data: "profileImage",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        render: function(data, type, row) {
-                            if (data) {
-                                return "<img class='direct-chat-img' style='float: none;' src='" +
-                                    data +
-                                    "' alt='message manajemen image'>";
-                            }
-                            return data;
-                        }
                     },
                     {
                         data: "aksi",

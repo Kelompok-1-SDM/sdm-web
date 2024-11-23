@@ -59,6 +59,11 @@ class AuthController extends Controller
         return view('auth.ResetPassword'); // Pastikan Anda memiliki view form untuk reset password.
     }
 
+    public function requestReset()
+    {
+        return view('auth.requestReset');
+    }
+
     // public function ResetPassword(Request $request)
     // {
     //     // Validasi input

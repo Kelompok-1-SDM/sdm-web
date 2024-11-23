@@ -70,7 +70,7 @@
         $(document).ready(function() {
             dataKompetensi = $('#table_kompetensi').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ url('kompetensi/list') }}",
                     type: "POST",

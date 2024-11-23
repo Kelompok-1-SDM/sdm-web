@@ -46,7 +46,6 @@
                         <th>NIP</th>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th>Image Profile</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -77,7 +76,7 @@
         $(document).ready(function() {
             dataDosen = $('#table_dosen').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false, // Disable server-side processing
                 ajax: {
                     url: "{{ url('dosen/list') }}",
                     type: "POST",
@@ -105,20 +104,6 @@
                         className: "text-center",
                         orderable: true,
                         searchable: true
-                    },
-                    {
-                        data: "profileImage",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        render: function(data, type, row) {
-                            if (data) {
-                                return "<img class='direct-chat-img' style='float: none;' src='" +
-                                    data +
-                                    "' alt='message dosen image'>";
-                            }
-                            return data;
-                        }
                     },
                     {
                         data: "aksi",

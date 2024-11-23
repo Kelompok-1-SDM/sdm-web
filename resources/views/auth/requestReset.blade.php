@@ -23,31 +23,20 @@
     <div class="login-box">
         <!-- /.login-logo -->
         <div class="card card-outline card-primary">
-            <div class="card-header text-center"><a href="{{ url('/') }}" class="h1"><b>Reset</b>Password</a>
+            <div class="card-header text-center"><a href="{{ url('/') }}" class="h1"><b>Request</b>Reset</a>
             </div>
             <div class="card-body">
                 {{-- <p class="login-box-msg">Sign in to start your session</p> --}}
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="password" id="password_baru" name="password_baru" class="form-control"
-                            placeholder="Password baru">
+                        <input type="number" id="nip" name="nip" class="form-control" placeholder="NIP">
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                                <span class="fas fa-envelope"></span>
                             </div>
                         </div>
                         <small id="error-password_baru" class="error-text text-danger"></small>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-control"
-                            placeholder="Konfirmasi password">
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
-                        </div>
-                        <small id="error-confirm_password" class="error-text text-danger"></small>
                     </div>
                     <div class="row">
                         <!-- /.col -->

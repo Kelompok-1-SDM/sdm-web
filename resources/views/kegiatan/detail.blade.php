@@ -16,24 +16,19 @@
             <p>{{ $data['deskripsi'] }}</p>
             <div class="row">
                 @foreach ($data['kompetensi'] as $apalah)
-                    @php
-                        // Define an array of color classes
-                        $badgeColors = ['badge-primary', 'badge-danger', 'badge-warning', 'badge-secondary'];
-                        // Randomly select a color from the array
-                        $randomColor = $badgeColors[array_rand($badgeColors)];
-                    @endphp
-                    <small class="badge {{ $randomColor }} m-2">{{ $apalah }}</small>
+                    <small class="badge badge-secondary m-2">{{ $apalah }}</small>
                 @endforeach
             </div>
 
         </div>
     </div>
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Dosen yang ditugaskan</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
-                    class="btn btn-sm btn-primary mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/anggota_create_ajax') }}')"
+                    class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
             </div>
         </div>
         <div class="card-body">
@@ -62,22 +57,35 @@
                 </script>
             @endif
 
+            <div class="row mb-2">
+                <div class="col-md-3">
+                    <label for="filterTipeAnggota">Filter Tipe Anggota:</label>
+                    <select id="filterTipeAnggota" class="form-control">
+                        <option value="">Semua</option>
+                        <option value="pic">PIC</option>
+                        <option value="anggota">Anggota</option>
+                    </select>
+                </div>
+            </div>
+
             {{-- Tabel Data --}}
             <table class="table table-bordered table-striped table-hover table-sm" id="table_kegiatan">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>User</th>
-                        <th>NIP</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Nomor</th>
+                        <th class="text-center">Nama</th>
+                        <th class="text-center">Email</th>
+                        <th class="text-center">Role</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
+                <tbody>
+                </tbody>
             </table>
         </div>
     </div>
+
 
     <div class="row">
         <!-- Left col -->
@@ -115,9 +123,17 @@
                                 <!-- todo text -->
                                 <span class="text">{{ $item['namaAgenda'] }}</span>
                                 <!-- Emphasis label -->
-                                <small class="badge badge-warning">
+                                @php
+                                    // Create DateTime object from the agenda's date
+$agendaDate = date_create($item['jadwalAgenda']);
+// Get the current date and time
+$currentDate = new DateTime();
+// Determine badge class based on the comparison
+$badgeClass = $currentDate > $agendaDate ? 'badge-danger' : 'badge-warning';
+                                @endphp
+                                <small class="badge {{ $badgeClass }}">
                                     <i class="far fa-clock"></i>
-                                    {{ date_format(date_create($item['jadwalAgenda']), 'd F Y, H:i') }}
+                                    {{ date_format($agendaDate, 'd F Y, H:i') }}
                                 </small>
                                 <!-- General tools such as edit or delete-->
                                 <div class="tools">
@@ -127,8 +143,8 @@
                             </li>
                             @php $apa++; @endphp
                         @endforeach
-
                     </ul>
+
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer clearfix">
@@ -173,8 +189,12 @@
     {{-- CDN SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
     {{-- DataTables Script --}}
     <script>
+        var usersData = @json($data['user']);
+        var kegiatanId = @json($data['kegiatanId']);
+        var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
         function modalAction(url = '') {
             $('#myModal').load(url, function() {
@@ -182,75 +202,97 @@
             });
         }
 
-        // DataTables Server-Side
-        var dataKegiatan;
         $(document).ready(function() {
-            dataKegiatan = $('#table_kegiatan').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ url('kegiatan/detailUser') }}",
-                    type: "POST",
-                    data: function(d) {
-                        const path = window.location.pathname;
-                        const apa = path.split('/');
-                        d.uid = apa[apa.length - 2];
-                    }
-                },
+            // Initialize DataTables with dynamic data
+            var dataKegiatan = $('#table_kegiatan').DataTable({
+                data: usersData, // Use the JSON data passed from Blade
                 columns: [{
-                        data: "DT_RowIndex",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    },
+                        data: null,
+                        className: 'text-center',
+                        render: (data, type, row, meta) => meta.row + 1
+                    }, // Nomor
                     {
-                        data: "nama",
-                        className: "text-center",
-                        orderable: true,
-                        width: "10%",
-                        searchable: true
-                    },
-                    {
-                        data: "nip",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "email",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                    },
-                    {
-                        data: "roleKegiatan",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        render: function(data, type, raw) {
-                            if (data == 'pic') {
-                                return `<small class='badge badge-success'>${data}</small>`
-                            } else {
-                                return `<small class='badge badge-primary'>${data}</small>`
-                            }
-
+                        data: 'nama',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            return `<a href="javascript:void(0);" 
+               onclick="modalAction('${baseUrl}/kegiatan/anggota_show_ajax?data=${encodeURIComponent(JSON.stringify(row))}')" 
+               class="text-primary">${data}</a>`;
                         }
-                    },
+                    }, // Nama
                     {
-                        data: "status",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                    },
+                        data: 'email',
+                        className: 'text-center'
+                    }, // Email
                     {
-                        data: "aksi",
-                        className: "text-center",
-                        orderable: false,
-                        width: "15%",
-                        searchable: false
-                    }
-                ]
+                        data: 'roleKegiatan',
+                        className: 'text-center',
+                        render: function(data) {
+                            var badgeClass = data === 'pic' ? 'badge-success' : 'badge-primary';
+                            return `<small class="badge ${badgeClass}">${data}</small>`;
+                        },
+                    }, // Role
+                    {
+                        data: 'status',
+                        className: 'text-center',
+                        render: function(data) {
+                            var badgeClass = data === 'selesai' ? 'badge-success' : 'badge-warning';
+                            return `<small class="badge ${badgeClass}">${data}</small>`;
+                        },
+                    }, // Status
+                    {
+                        data: 'userId',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            return `
+                        <button class="btn btn-sm btn-warning" onclick="modalAction('${baseUrl}/kegiatan/${kegiatanId}/anggota_edit_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="modalAction('${baseUrl}/kegiatan/${kegiatanId}/anggota_delete_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Hapus</button>`;
+                        },
+                    }, // Aksi
+                ],
+                paging: true, // Enable pagination
+                pageLength: 10, // Items per page
+                lengthChange: true, // Allow user to change page length
+                searching: true, // Enable search
+                ordering: true, // Enable column sorting
+                info: true, // Show table info (e.g., "Showing 1 to 10 of 50 entries")
+            });
+
+            // Dropdown filter for Tipe Kegiatan
+            $('#filterTipeAnggota').on('change', function() {
+                var filterValue = $(this).val(); // Get the filter value
+                if (filterValue === "") {
+                    dataKegiatan.column(3).search("").draw(); // Clear the filter
+                } else {
+                    dataKegiatan.column(3).search(filterValue).draw(); // Apply filter to column 3
+                }
             });
         });
+
+        // Example functions for edit and delete actions
+        function editUser(userId) {
+            alert(`Edit user with ID: ${userId}`);
+            // Implement modal or AJAX call for editing
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                alert(`Delete user with ID: ${userId}`);
+                // Implement AJAX call for deletion
+            }
+        }
+
+        // Example functions for edit and delete actions
+        function editUser(userId) {
+            alert(`Edit user with ID: ${userId}`);
+            // Implement modal or AJAX call for editing
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                alert(`Delete user with ID: ${userId}`);
+                // Implement AJAX call for deletion
+            }
+        }
     </script>
 @endpush
