@@ -4,19 +4,75 @@
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">
-                {{ $data['judulKegiatan'] . ' - ' . date_format(date_create($data['tanggal']), 'd F Y, H:i') }}</h3>
+                {{ $data['judul'] }}
+                <small
+                    class='badge ml-2 {{ $data['tipeKegiatan'] === 'jti' ? 'badge-success' : 'badge-warning' }}'>{{ $data['tipeKegiatan'] }}</small>
+            </h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/'.$data['kegiatanId'].'/edit_ajax') }}')"
+                <button
+                    onclick="modalAction('{{ url(
+                        'kegiatan/edit_ajax?data=' .
+                            urlencode(
+                                json_encode([
+                                    'kegiatanId' => $data['kegiatanId'],
+                                    'judul' => $data['judul'],
+                                    'tanggalMulai' => $data['tanggalMulai'],
+                                    'tanggalAkhir' => $data['tanggalAkhir'],
+                                    'tipeKegiatan' => $data['tipeKegiatan'],
+                                    'lokasi' => $data['lokasi'],
+                                    'deskripsi' => $data['deskripsi'],
+                                    'kompetensi' => $data['kompetensi'],
+                                    'updatedAt' => $data['updatedAt'],
+                                    'createdAt' => $data['createdAt'],
+                                ]),
+                            ),
+                    ) }}')"
                     class="btn btn-sm btn-warning mt-1">Edit</button>
-                <button onclick="modalAction('{{ url('kegiatan/'.$data['kegiatanId'].'/delete_ajax') }}')"
+                <button
+                    onclick="modalAction('{{ url(
+                        'kegiatan/delete_ajax?data=' .
+                            urlencode(
+                                json_encode([
+                                    'kegiatanId' => $data['kegiatanId'],
+                                    'judul' => $data['judul'],
+                                    'tanggalMulai' => $data['tanggalMulai'],
+                                    'tanggalAkhir' => $data['tanggalAkhir'],
+                                    'tipeKegiatan' => $data['tipeKegiatan'],
+                                    'lokasi' => $data['lokasi'],
+                                    'deskripsi' => $data['deskripsi'],
+                                    'kompetensi' => $data['kompetensi'],
+                                    'updatedAt' => $data['updatedAt'],
+                                    'createdAt' => $data['createdAt'],
+                                ]),
+                            ),
+                    ) }}')"
                     class="btn btn-sm btn-danger mt-1">Hapus</button>
             </div>
         </div>
         <div class="card-body">
+            <table class="table table-bordered table-striped table-hover table-sm">
+                <tr>
+                    <th>Taggal Mulai</th>
+                    <td>{{ date_format(date_create($data['tanggalMulai']), 'd F Y, H:i') }}</td>
+                </tr>
+                <tr>
+                    <th>Taggal Akhir</th>
+                    <td>{{ date_format(date_create($data['tanggalAkhir']), 'd F Y, H:i') }}</td>
+                </tr>
+                <tr>
+                    <th>Lokasi</th>
+                    <td>{{ $data['lokasi'] }}</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td><small class='badge {{$data['isDone'] ? 'badge-success' : 'badge-warning'}}'>{{$data['isDone'] ? 'Selesai' : 'Belum Selesai'}}</small></td>
+                </tr>
+            </table>
+            <h4 class="mt-3">Deskripsi kegiatan</h4>
             <p>{{ $data['deskripsi'] }}</p>
             <div class="row">
                 @foreach ($data['kompetensi'] as $apalah)
-                    <small class="badge badge-secondary m-2">{{ $apalah }}</small>
+                    <small class="badge badge-secondary m-2">{{ $apalah['namaKompetensi'] }}</small>
                 @endforeach
             </div>
 
@@ -62,8 +118,9 @@
                     <label for="filterTipeAnggota">Filter Tipe Anggota:</label>
                     <select id="filterTipeAnggota" class="form-control">
                         <option value="">Semua</option>
-                        <option value="pic">PIC</option>
-                        <option value="anggota">Anggota</option>
+                        @foreach ($jabatan as $item)
+                            <option value="{{ $item['namaJabatan'] }}">{{ $item['namaJabatan'] }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -75,8 +132,7 @@
                         <th class="text-center">Nomor</th>
                         <th class="text-center">Nama</th>
                         <th class="text-center">Email</th>
-                        <th class="text-center">Role</th>
-                        <th class="text-center">Status</th>
+                        <th class="text-center">Jabatan</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -192,7 +248,7 @@ $badgeClass = $currentDate > $agendaDate ? 'badge-danger' : 'badge-warning';
 
     {{-- DataTables Script --}}
     <script>
-        var usersData = @json($data['user']);
+        var usersData = @json($data['users']);
         var kegiatanId = @json($data['kegiatanId']);
         var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
@@ -225,21 +281,13 @@ $badgeClass = $currentDate > $agendaDate ? 'badge-danger' : 'badge-warning';
                         className: 'text-center'
                     }, // Email
                     {
-                        data: 'roleKegiatan',
+                        data: 'namaJabatan',
                         className: 'text-center',
-                        render: function(data) {
-                            var badgeClass = data === 'pic' ? 'badge-success' : 'badge-primary';
+                        render: function(data, type, row) {
+                            var badgeClass = row.isPic ? 'badge-success' : 'badge-primary';
                             return `<small class="badge ${badgeClass}">${data}</small>`;
                         },
-                    }, // Role
-                    {
-                        data: 'status',
-                        className: 'text-center',
-                        render: function(data) {
-                            var badgeClass = data === 'selesai' ? 'badge-success' : 'badge-warning';
-                            return `<small class="badge ${badgeClass}">${data}</small>`;
-                        },
-                    }, // Status
+                    }, // Jabatan
                     {
                         data: 'userId',
                         className: 'text-center',

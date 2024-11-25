@@ -52,6 +52,13 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="{{ url('/jabatan') }}" class="nav-link {{ $activeMenu == 'jabatan' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-bars"></i>
+                    <p>Jabatan</p>
+                </a>
+            </li>
+            <li class="nav-header"></li>
+            <li class="nav-item">
                 <a href="{{ url('/logout') }}" class="nav-link {{ $activeMenu == 'logout' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-door-open"></i>
                     <p>Logout</p>

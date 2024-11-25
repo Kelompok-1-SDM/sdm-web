@@ -1,13 +1,49 @@
 @extends('layouts.template')
 
 @section('content')
-    <div class="card card-outline card-primary">
+    <div class="card">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
+            <h3 class="card-title">
+                Detail Data Manajemen
+            </h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('manajemen/' . $manajemen['userId'] . '/edit_ajax') }}')"
+                    class="btn btn-sm btn-warning mt-1">Edit</button>
+                <button onclick="modalAction('{{ url('manajemen/' . $manajemen['userId'] . '/delete_ajax') }}')"
+                    class="btn btn-sm btn-danger mt-1">Hapus</button>
             </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover table-sm">
+                <tr>
+                    <th>ID</th>
+                    <td>{{ $manajemen['userId'] }}</td>
+                </tr>
+                <tr>
+                    <th>NIP</th>
+                    <td>{{ $manajemen['nip'] }}</td>
+                </tr>
+                <tr>
+                    <th>Nama</th>
+                    <td>{{ $manajemen['nama'] }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ $manajemen['email'] }}</td>
+                </tr>
+            </table>
+            <div class="row">
+                @foreach ($manajemen['kompetensi'] as $apalah)
+                    <small class="badge badge-secondary m-2">{{ $apalah['namaKompetensi'] }}</small>
+                @endforeach
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Kegiatan pada manajemen</h3>
         </div>
         <div class="card-body">
             {{-- Tampilkan Notifikasi Sukses atau Error --}}
@@ -37,11 +73,11 @@
 
             <div class="row mb-2">
                 <div class="col-md-3">
-                    <label for="filterTipeKegiatan">Filter Tipe Kegiatan:</label>
+                    <label for="filterTipeKegiatan">Filter tipe kegiatan:</label>
                     <select id="filterTipeKegiatan" class="form-control">
                         <option value="">Semua</option>
                         <option value="jti">JTI</option>
-                        <option value="non-jti">Non-JTI</option>
+                        <option value="non-jti">Non JTI</option>
                     </select>
                 </div>
             </div>
@@ -50,15 +86,16 @@
             <table class="table table-bordered table-striped table-hover table-sm" id="table_kegiatan">
                 <thead>
                     <tr>
-                        <th>Nomor</th>
-                        <th>Judul kegiatan</th>
-                        <th>Tipe kegiatan</th>
-                        <th>Tanggal Mulai</th>
-                        <th>Status</th>
-                        <th>Lokasi</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Nomor</th>
+                        <th class="text-center">Judul kegiatan</th>
+                        <th class="text-center">Tipe kegiatan</th>
+                        <th class="text-center">Tanggal Mulai</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Detail</th>
                     </tr>
                 </thead>
+                <tbody>
+                </tbody>
             </table>
         </div>
     </div>
@@ -72,8 +109,11 @@
     {{-- CDN SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
     {{-- DataTables Script --}}
     <script>
+        var kegiatanData = @json($kegiatan);
+        var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
         function modalAction(url = '') {
             $('#myModal').load(url, function() {
@@ -81,33 +121,29 @@
             });
         }
 
-        // DataTables Server-Side
-        var dataKegiatan;
         $(document).ready(function() {
+            // Initialize DataTables with dynamic data
             var dataKegiatan = $('#table_kegiatan').DataTable({
-                processing: true,
-                serverSide: false, // Disable server-side processing
-                ajax: {
-                    url: "{{ url('kegiatan/list') }}",
-                    type: "POST",
-                },
+                data: kegiatanData, // Use the JSON data passed from Blade
                 columns: [{
-                        data: "DT_RowIndex",
-                        className: "text-center"
-                    },
+                        data: null,
+                        className: 'text-center',
+                        render: (data, type, row, meta) => meta.row + 1
+                    }, // Nomor
                     {
-                        data: "judul",
-                        width: "20%",
-                        className: "text-center"
-                    },
-
+                        data: 'judul',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            return `<a href='${baseUrl}/kegiatan/${row['kegiatanId']}/detail' class="text-primary">${data}</a>`;
+                        }
+                    }, // Nama
                     {
                         data: "tipeKegiatan",
                         className: "text-center",
                         render: function(data, type, row) {
                             return `<small class='badge ${data === 'jti' ? 'badge-success' : 'badge-warning'}'>${data}</small>`;
                         },
-                    },
+                    }, // Email
                     {
                         data: "tanggalMulai",
                         className: "text-center",
@@ -132,7 +168,7 @@
                             // Return the formatted date and time as "d MMM yyyy, H:m"
                             return day + ' ' + month + ' ' + year + ', ' + hours + ':' + minutes;
                         },
-                    },
+                    }, // Jabatan
                     {
                         data: "isDone",
                         className: "text-center",
@@ -141,17 +177,22 @@
                         },
                     },
                     {
-                        data: "lokasi",
-                        className: "text-center"
-                    },
-                    {
-                        data: "aksi",
-                        className: "text-center"
-                    },
+                        data: 'kegiatanId',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            return `
+                        <a class="btn btn-sm btn-info" href="${baseUrl}/kegiatan/${data}/detail">Detail</a>`;
+                        },
+                    }, // Aksi
                 ],
+                paging: true, // Enable pagination
+                pageLength: 10, // Items per page
+                lengthChange: true, // Allow user to change page length
+                searching: true, // Enable search
+                ordering: true, // Enable column sorting
+                info: true, // Show table info (e.g., "Showing 1 to 10 of 50 entries")
             });
 
-            // Dropdown filter for Tipe Kegiatan
             $('#filterTipeKegiatan').on('change', function() {
                 var filterValue = $(this).val(); // Get selected filter value
 
@@ -171,5 +212,31 @@
                 dataKegiatan.draw();
             });
         });
+
+        // Example functions for edit and delete actions
+        function editUser(userId) {
+            alert(`Edit user with ID: ${userId}`);
+            // Implement modal or AJAX call for editing
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                alert(`Delete user with ID: ${userId}`);
+                // Implement AJAX call for deletion
+            }
+        }
+
+        // Example functions for edit and delete actions
+        function editUser(userId) {
+            alert(`Edit user with ID: ${userId}`);
+            // Implement modal or AJAX call for editing
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                alert(`Delete user with ID: ${userId}`);
+                // Implement AJAX call for deletion
+            }
+        }
     </script>
 @endpush

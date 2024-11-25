@@ -1,6 +1,6 @@
 <form action="{{ url('/kegiatan/' . $id . '/anggota_store_ajax') }}" method="POST" id="form-tambah">
     @csrf
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div id="modal-master" class="modal-dialog modal-lg" jabatan="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Anggota Penugasan</h5>
@@ -22,13 +22,14 @@
                             <small id="error-userId" class="error-text form-text text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label>Role Kegiatan</label>
-                            <select name="role" id="role" class="form-control">
+                            <label>Jabatan Kegiatan</label>
+                            <select name="jabatan" id="jabatan" class="form-control">
                                 <option value="">- Pilih Role -</option>
-                                <option value="pic">PIC</option>
-                                <option value="anggota">Anggota</option>
+                                @foreach ($jabatan as $l)
+                                    <option value="{{ $l['jabatanId'] }}">{{ $l['namaJabatan'] }} - {{$l['isPic'] ? 'PIC' : 'Anggota'}}</option>
+                                @endforeach
                             </select>
-                            <small id="error-role" class="error-text form-text text-danger"></small>
+                            <small id="error-jabatan" class="error-text form-text text-danger"></small>
                         </div>
                     </div>
                     <!-- Aligned buttons to the right -->
@@ -62,11 +63,11 @@
         // Add user to the list
         $("#add-user").on("click", function() {
             let userId = $("#userId").val();
-            let role = $("#role").val();
+            let jabatan = $("#jabatan").val();
             let userName = $("#userId option:selected").text();
-            let roleName = $("#role option:selected").text();
+            let jabatanName = $("#jabatan option:selected").text();
 
-            if (!userId || !role) {
+            if (!userId || !jabatan) {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
@@ -76,30 +77,30 @@
             }
 
             if (assignedUsers[userId]) {
-                // Update the user's role if they are already in the list
-                assignedUsers[userId].role = role;
-                $(`#user-item-${userId}`).find(".badge-role").text(roleName);
+                // Update the user's jabatan if they are already in the list
+                assignedUsers[userId].jabatan = jabatan;
+                $(`#user-item-${userId}`).find(".badge-jabatan").text(jabatanName);
             } else {
                 // Add a new user to the list
                 assignedUsers[userId] = {
                     userId,
-                    role
+                    jabatan
                 };
                 let listItem = `
                 <li id="user-item-${userId}">
                     <span class="text">${userName}</span>
-                    <small class="badge badge-secondary badge-role">${roleName}</small>
-                    <button type="button" class="btn btn-warning btn-sm float-right edit-user" data-user-id="${userId}" data-user-role="${role}">Edit</button>
+                    <small class="badge badge-secondary badge-jabatan">${jabatanName}</small>
+                    <button type="button" class="btn btn-warning btn-sm float-right edit-user" data-user-id="${userId}" data-user-jabatan="${jabatan}">Edit</button>
                     <button type="button" class="btn btn-danger btn-sm float-right remove-user mr-2" data-user-id="${userId}">Remove</button>
                     <input type="hidden" name="assigned_users[${userId}][userId]" value="${userId}">
-                    <input type="hidden" name="assigned_users[${userId}][role]" value="${role}">
+                    <input type="hidden" name="assigned_users[${userId}][jabatan]" value="${jabatan}">
                 </li>`;
                 $("#assigned-users-list").append(listItem);
             }
 
             // Reset the dropdowns
             $("#userId").val("");
-            $("#role").val("");
+            $("#jabatan").val("");
         });
 
         // Remove user from the list
@@ -112,11 +113,11 @@
         // Edit user in the list
         $(document).on("click", ".edit-user", function() {
             let userId = $(this).data("user-id");
-            let userRole = assignedUsers[userId].role;
+            let userRole = assignedUsers[userId].jabatan;
 
             // Update the selectors with the selected user's data
             $("#userId").val(userId).change();
-            $("#role").val(userRole).change();
+            $("#jabatan").val(userRole).change();
 
             // Optionally highlight the item being edited (visual feedback)
             $(`#user-item-${userId}`).addClass("bg-warning");

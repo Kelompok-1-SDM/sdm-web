@@ -42,17 +42,36 @@ class DosenController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
                 ->addColumn('aksi', function ($dosen) {  // menambahkan kolom aksi  
-                    $btn  = '<button onclick="modalAction(\'' . url('/dosen/' . $dosen['userId'] .
-                        '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen['userId'] .
-                        '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen['userId'] .
-                        '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                    $btn  = "<a href=" . url('/dosen/' . $dosen['userId'] . '/detail') . " class='btn btn-info btn-sm'>Detail</a>";
 
                     return $btn;
                 })
                 ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html  
                 ->make(true);
+        }
+    }
+
+    public function detailDosen(string $id)
+    {   
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
+            'uid' => $id
+        ]);
+        $responseKegiatan = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
+            'uid_user' => $id
+        ]);
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Dosen',
+            'list' => ['Data Pengguna', 'Dosen', 'Detail Dosen']
+        ];
+
+        if ($response->successful() && $responseKegiatan->successful()) {
+            return view('dosen.detail', [
+                'breadcrumb' => $breadcrumb,
+                'activeMenu' => 'apalah',
+                'dosen' => $response->json('data'),
+                'kegiatan' => $responseKegiatan->json('data')
+            ]);
         }
     }
 
@@ -210,19 +229,6 @@ class DosenController extends Controller
                 ]);
             }
             return redirect('/');
-        }
-    }
-
-    public function show_ajax(string $id)
-    {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
-            'uid' => $id
-        ]);
-
-        if ($response->successful()) {
-            return view('dosen.show_ajax', ['dosen' => $response->json('data')]);
-        } else {
-            return view('dosen.show_ajax', ['dosen' => null]);
         }
     }
 

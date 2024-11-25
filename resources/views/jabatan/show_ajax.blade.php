@@ -1,4 +1,4 @@
-@empty($manajemen)
+@empty($jabatan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,7 +11,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/manajemen') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/jabatan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -26,30 +26,13 @@
             <div class="modal-body">
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
-                        <th>ID</th>
-                        <td>{{ $manajemen['userId'] }}</td>
+                        <th>Jabatan ID</th>
+                        <td>{{ $jabatan['jabatanId'] }}</td>
                     </tr>
                     <tr>
-                        <th>NIP</th>
-                        <td>{{ $manajemen['nip'] }}</td>
+                        <th>Nama Jabatan</th>
+                        <td>{{ $jabatan['namaJabatan'] }}</td>
                     </tr>
-                    <tr>
-                        <th>Nama</th>
-                        <td>{{ $manajemen['nama'] }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email</th>
-                        <td>{{ $manajemen['email'] }}</td>
-                    </tr>
-                    @if ($manajemen['profileImage'] != '')
-                        <tr>
-                            <th>Foto Profil</th>
-                            <td>
-                                <img class='direct-chat-img' style='float: none;' src='{{ $manajemen['profileImage'] }}'
-                                    alt='Ini gambar'>
-                            </td>
-                        </tr>
-                    @endif
                 </table>
             </div>
             <div class="modal-footer">

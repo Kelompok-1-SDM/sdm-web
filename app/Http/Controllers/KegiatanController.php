@@ -38,7 +38,6 @@ class KegiatanController extends Controller
     public function list(Request $request)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
-
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
@@ -59,6 +58,8 @@ class KegiatanController extends Controller
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
             'uid' => $id
         ]);
+        $responseJabatan = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan");
+
         $breadcrumb = (object) [
             'title' => 'Detail Kegiatan',
             'list' => ['Kegiatan', 'Detail Kegiatan']
@@ -70,6 +71,7 @@ class KegiatanController extends Controller
             return view('kegiatan.detail', [
                 'breadcrumb' => $breadcrumb,
                 'activeMenu' => 'apalah',
+                'jabatan' => $responseJabatan->json('data'),
                 'data' => $data
             ]);
         }
@@ -78,7 +80,8 @@ class KegiatanController extends Controller
     public function anggota_create_ajax(string $id)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", ['role' => 'dosen']);
-        return view('kegiatan.anggota.create_ajax', ['dosen' => $response->json('data'), 'id' => $id]);
+        $responseJabatan = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan", ['role' => 'dosen']);
+        return view('kegiatan.anggota.create_ajax', ['dosen' => $response->json('data'), 'id' => $id, 'jabatan' => $responseJabatan->json('data')]);
     }
 
     public function anggota_store_ajax(Request $request, string $id)
@@ -88,7 +91,7 @@ class KegiatanController extends Controller
             $rules = [
                 'assigned_users' => 'required|array',
                 'assigned_users.*.userId' => 'required|distinct', // Each userId must be provided and unique
-                'assigned_users.*.role' => 'required|string',    // Each role must be provided
+                'assigned_users.*.jabatan' => 'required|string',    // Each role must be provided
             ];
 
             // Validate the request
@@ -110,7 +113,7 @@ class KegiatanController extends Controller
             foreach ($request->assigned_users as $user) {
                 $newReq['list_user_ditugaskan'][] = [
                     'uid_user' => $user['userId'],
-                    'role'   => $user['role']
+                    'uid_jabatan'   => $user['jabatan']
                 ];
             }
 
@@ -137,9 +140,13 @@ class KegiatanController extends Controller
 
     public function anggota_edit_ajax(Request $request, string $id)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", ['role' => 'dosen']);
         $userData = json_decode($request->query('data'), true);
-        return view('kegiatan.anggota.edit_ajax', ['dosen' => $response->json('data'), 'id' => $id, 'current' => $userData]);
+        if ($userData['status'] == 'ditugaskan') {
+            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", ['role' => 'dosen']);
+            return view('kegiatan.anggota.edit_ajax', ['dosen' => $response->json('data'), 'id' => $id, 'current' => $userData]);
+        }
+
+        return view('kegiatan.anggota.edit_ajax', ['id' => $id, 'current' => $userData]);
     }
 
     public function anggota_update_ajax(Request $request, string $id)
@@ -148,7 +155,7 @@ class KegiatanController extends Controller
             // Define the validation rules
             $rules = [
                 'userId' => 'required|string',
-                'role' => 'required|string',    // Each role must be provided
+                'jabatan' => 'required|string',    // Each role must be provided
                 'status' => 'required|string',
             ];
 
@@ -170,7 +177,7 @@ class KegiatanController extends Controller
 
             $newReq['list_user_ditugaskan'][] = [
                 'uid_user' => $request->userId,
-                'role'   => $request->role,
+                'uid_jabatan'   => $request->jabatan,
                 'status' => $request->status
             ];
 
@@ -232,18 +239,15 @@ class KegiatanController extends Controller
         }
     }
 
-    public function edit_ajax(string $id)
+    public function edit_ajax(Request $request)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
-            'uid' => $id
-        ]);
+        $kegData = json_decode($request->query('data'), true);
 
         $responseKompetensi = Http::withAuthToken()->get(
             "{$this->apiUrl}/api/kompetensi",
         );
 
-        if ($response->successful()) {
-            $data = $response->json('data'); // Ambil data dari API jika respons berhasil
+        if ($responseKompetensi->successful()) {
             $kompetensi = $responseKompetensi->json('data');
 
             $breadcrumb = (object) [
@@ -258,12 +262,12 @@ class KegiatanController extends Controller
             $activeMenu = 'kegiatan';
 
             // Render view dengan data yang relevan
-            return view('kegiatan.edit', [
+            return view('kegiatan.edit_ajax', [
                 'breadcrumb' => $breadcrumb,
                 'kompetensi' => $kompetensi,
                 'page' => $page,
                 'activeMenu' => $activeMenu,
-                'kegiatan' => $data
+                'kegiatan' => $kegData
             ]);
         } else {
             // Jika respons gagal, tampilkan error atau redirect
@@ -271,16 +275,18 @@ class KegiatanController extends Controller
         }
     }
 
-    public function update_ajax(Request $request, $id)
+    public function update_ajax(Request $request, string $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Validasi data
+            // Validation rules
             $rules = [
-                'nama_kegiatan' => 'required|string|max:255',
-                'tanggal_mulai' => 'required|date',
-                'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-                'deskripsi' => 'nullable|string|max:1000',
-                'lokasi' => 'required|string|max:255',
+                'nama_kegiatan' => 'nullable',
+                'tanggal_mulai' => 'nullable',
+                'tanggal_selesai' => 'nullable',
+                'deskripsi' => 'nullable',
+                'lokasi' => 'nullable',
+                'assigned_kompetensis' => 'required|array',
+                'assigned_kompetensis.*.kompetensiId' => 'required|distinct'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -293,14 +299,30 @@ class KegiatanController extends Controller
                 ]);
             }
 
-            // Ambil data kegiatan
-            $response = Http::withAuthToken()->put("{$this->apiUrl}/api/kegiatan/{$id}", [
+            // Extract all 'kompetensiId' values from 'assigned_kompetensis'
+            $kompetensiIds = [];
+
+            foreach ($request->assigned_kompetensis as $kompetensi) {
+                // Ensure 'kompetensiId' is added to the array
+                $kompetensiIds[] = $kompetensi['kompetensiId'];
+            }
+
+            // Combine the kompetensiIds with other request data
+            $payload = [
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'tanggal_mulai' => $request->tanggal_mulai,
                 'tanggal_selesai' => $request->tanggal_selesai,
                 'deskripsi' => $request->deskripsi,
                 'lokasi' => $request->lokasi,
-            ]);
+                'list_kompetensi' => $kompetensiIds, // This is the array of kompetensiId values
+            ];
+
+            // Send data to external API to update 'kegiatan'
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->put("{$this->apiUrl}/api/kegiatan/", $payload);
 
             if ($response->successful()) {
                 return response()->json([
@@ -317,18 +339,11 @@ class KegiatanController extends Controller
         }
     }
 
-    public function confirm_ajax(string $id)
-    {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
-            'uid' => $id
-        ]);
 
-        if ($response->successful()) {
-            $kegiatan = $response->json('data');
-            return view('kegiatan.confirm_ajax', ['kegiatan' => $kegiatan]);
-        } else {
-            return redirect()->route('kegiatan.confirm_ajax')->with('error', 'Data kegiatan tidak ditemukan.');
-        }
+    public function confirm_ajax(Request $request)
+    {
+        $kegiatan = json_decode($request->query('data'), true);
+        return view('kegiatan.confirm_ajax', ['kegiatan' => $kegiatan]);
     }
 
 

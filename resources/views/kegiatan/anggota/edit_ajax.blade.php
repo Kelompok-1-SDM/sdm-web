@@ -32,10 +32,15 @@
                         <select name="userId" id="userId" class="form-control"
                             {{ $current['status'] == 'selesai' ? 'disabled' : '' }}>
                             <option value="">- Pilih Dosen -</option>
-                            @foreach ($dosen as $l)
-                                <option value="{{ $l['userId'] }}" {{ $l['nama'] == $current['nama'] ? 'selected' : '' }}>
-                                    {{ $l['nama'] }}</option>
-                            @endforeach
+                            @if ($current['status'] == 'selesai')
+                                <option value="{{$current['userId']}}" selected>{{$current['nama']}}</option>
+                            @else
+                                @foreach ($dosen as $l)
+                                    <option value="{{ $l['userId'] }}"
+                                        {{ $l['nama'] == $current['nama'] ? 'selected' : '' }}>
+                                        {{ $l['nama'] }}</option>
+                                @endforeach
+                            @endif
                         </select>
                         <small id="error-userId" class="error-text form-text text-danger"></small>
                     </div>

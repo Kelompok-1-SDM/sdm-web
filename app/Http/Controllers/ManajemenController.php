@@ -50,18 +50,37 @@ class ManajemenController extends Controller
             $data = $response->json('data');
             return DataTables::of($data)
                 ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
-                ->addColumn('aksi', function ($dosen) {  // menambahkan kolom aksi  
-                    $btn  = '<button onclick="modalAction(\'' . url('/manajemen/' . $dosen['userId'] .
-                        '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/manajemen/' . $dosen['userId'] .
-                        '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/manajemen/' . $dosen['userId'] .
-                        '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                ->addColumn('aksi', function ($manajemen) {  // menambahkan kolom aksi  
+                    $btn  = "<a href=" . url('/manajemen/' . $manajemen['userId'] . '/detail') . " class='btn btn-info btn-sm'>Detail</a>";
 
                     return $btn;
                 })
                 ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html  
                 ->make(true);
+        }
+    }
+
+    public function detailManajemen(string $id)
+    {   
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
+            'uid' => $id
+        ]);
+        $responseKegiatan = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
+            'uid_user' => $id
+        ]);
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Manajemen',
+            'list' => ['Data Pengguna', 'Manajemen', 'Detail Manajemen']
+        ];
+
+        if ($response->successful() && $responseKegiatan->successful()) {
+            return view('manajemen.detail', [
+                'breadcrumb' => $breadcrumb,
+                'activeMenu' => 'apalah',
+                'manajemen' => $response->json('data'),
+                'kegiatan' => $responseKegiatan->json('data')
+            ]);
         }
     }
 
