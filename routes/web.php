@@ -88,7 +88,7 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::get('/edit_ajax', [KegiatanController::class, 'edit_ajax']);
         Route::get('/delete_ajax', [KegiatanController::class, 'confirm_ajax']);
         Route::post('/{id}/update_ajax', [KegiatanController::class, 'update_ajax']);
-
+        Route::get('/{id}/create_agenda', [KegiatanController::class, 'create_agenda']);
         Route::get('/anggota_show_ajax', [KegiatanController::class, 'anggota_show_ajax']);
         Route::get('/{id}/anggota_create_ajax', [KegiatanController::class, 'anggota_create_ajax']);
         Route::post('/{id}/anggota_store_ajax', [KegiatanController::class, 'anggota_store_ajax']);

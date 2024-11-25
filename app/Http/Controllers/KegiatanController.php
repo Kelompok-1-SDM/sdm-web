@@ -372,4 +372,16 @@ class KegiatanController extends Controller
             'message' => 'Invalid request'
         ], 400);
     }
+
+    public function create_agenda(Request $request)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/agenda",
+        );
+
+        if ($response->successful()) {
+            return view('kegiatan.create_agenda', ['agenda' => $response->json('data')]);
+        } else {
+            return view('kegiatan.create_agenda', ['agenda' => null]);
+        }
+    }
 }

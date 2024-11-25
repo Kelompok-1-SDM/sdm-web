@@ -65,7 +65,9 @@
                 </tr>
                 <tr>
                     <th>Status</th>
-                    <td><small class='badge {{$data['isDone'] ? 'badge-success' : 'badge-warning'}}'>{{$data['isDone'] ? 'Selesai' : 'Belum Selesai'}}</small></td>
+                    <td><small
+                            class='badge {{ $data['isDone'] ? 'badge-success' : 'badge-warning' }}'>{{ $data['isDone'] ? 'Selesai' : 'Belum Selesai' }}</small>
+                    </td>
                 </tr>
             </table>
             <h4 class="mt-3">Deskripsi kegiatan</h4>
@@ -204,8 +206,10 @@ $badgeClass = $currentDate > $agendaDate ? 'badge-danger' : 'badge-warning';
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer clearfix">
-                    <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add
-                        item</button>
+                    {{-- <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add
+                        item</button> --}}
+                    <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/create_agenda') }}')"
+                        class="btn btn-primary float-right">Add Item</button>
                 </div>
             </div>
             <!-- /.card -->
