@@ -1,4 +1,4 @@
-@empty($admin)
+@empty($current)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,58 +11,55 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/admin') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/kegiatan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/' . $admin['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
+    <form action="{{ url('/kegiatan/' . $id . '/agenda_update_ajax') }}" method="POST" id="form-edit">
         @csrf
         @method('POST')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Admin</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Agenda Kegiatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="role" value="admin">
                     <div class="form-group">
-                        <label>Nip</label>
-                        <input value="{{ $admin['nip'] }}" type="number" name="nip" id="nip"
-                            class="form-control">
-                        <small id="error-nip" class="error-text form-text text-danger"></small>
+                        <label>Nama Agenda</label>
+                        <input type="text" name="nama_agenda" id="nama_agenda" class="form-control"
+                            value="{{ $current['namaAgenda'] }}" required>
+                        <small id="error-nama_agenda" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Nama</label>
-                        <input value="{{ $admin['nama'] }}" type="text" name="nama" id="nama"
-                            class="form-control">
-                        <small id="error-nama" class="error-text form-text text-danger"></small>
+                        <label>Jadwal Agenda</label>
+                        <input type="date" name="jadwal_agenda" id="jadwal_agenda" class="form-control"
+                            value="{{ $current['jadwalAgenda'] ? \Carbon\Carbon::parse($current['jadwalAgenda'])->format('Y-m-d') : '' }}"
+                            required>
+                        <small id="error-jadwal_agenda" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
-                        <input value="{{ $admin['email'] }}" type="email" name="email" id="email"
-                            class="form-control">
-                        <small id="error-email" class="error-text form-text text-danger"></small>
+                        <label>Deskripsi Agenda</label>
+                        <textarea name="deskripsi_agenda" id="deskripsi_agenda" class="form-control" rows="3" required>{{ $current['deskripsiAgenda'] }}</textarea>
+                        <small id="error-deskripsi_agenda" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Foto Profil</label>
-                        <input type="file" name="file" id="file" class="form-control">
-                        <small style="color: grey;">*optional, fill if need to be changed</small>
-                        <small id="error-file" class="error-text form-text text-danger"></small>
+                        <label>Status</label>
+                        <select name="is_done" id="is_done" class="form-control">
+                            <option value="false">- Pilih Status -</option>
+                            <option value="true" {{ $current['isDone'] ? 'selected' : '' }}>Selesai</option>
+                            <option value="false" {{ $current['isDone'] == false ? 'selected' : '' }}>Belum Selesai
+                            </option>
+                        </select>
+                        <small id="error-is_done" class="error-text form-text text-danger"></small>
                     </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input value="" type="password" name="password" id="password" class="form-control">
-                        <small style="color: grey;">*optional, fill if need to be changed</small>
-                        <small id="error-password" class="error-text form-text text-danger"></small>
-                    </div>
-                </div>
 
+                </div>
                 <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-success">Simpan</button>
                 </div>
             </div>
         </div>
@@ -72,38 +69,15 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-                    role: {
+                    jabatan_id: {
                         required: true
-                    },
-                    nip: {
-                        minlength: 3,
-                        maxlength: 24
-                    },
-                    nama: {
-                        minlength: 3,
-                        maxlength: 255
-                    },
-                    email: {
-                        maxlength: 255
-                    },
-                    password: {
-                        minlength: 6,
-                        maxlength: 20
-                    },
-                    file: {
-                        extension: "jpg|jpeg|png|ico|bmp"
                     }
                 },
                 submitHandler: function(form) {
-                    var formData = new FormData(
-                        form); // Jadikan form ke FormData untuk menghandle file 
-
                     $.ajax({
                         url: form.action,
                         type: form.method,
-                        data: formData,
-                        processData: false, // setting processData dan contentType ke false, untuk menghandle file 
-                        contentType: false,
+                        data: $(form).serialize(),
                         success: function(response) {
                             if (response.status) {
                                 $('#myModal').modal('hide');
@@ -112,7 +86,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataAdmin.ajax.reload();
+                                location.reload();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

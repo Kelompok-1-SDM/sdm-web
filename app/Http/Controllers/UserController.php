@@ -1,7 +1,5 @@
 <?php
 
-// app/Http/Controllers/ManajemenController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -9,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-class ManajemenController extends Controller
+class UserController extends Controller
 {
     protected $apiUrl;
 
@@ -18,50 +16,42 @@ class ManajemenController extends Controller
         $this->apiUrl = env('API_BASE_URL', "ini harus url");
     }
 
-    public function index()
+    public function index(string $userType)
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Manajemen',
-            'list' => ['Data Pengguna', 'Manajemen']
+            'title' => 'Daftar ' . ucfirst($userType),
+            'list' => ['Data Pengguna', ucfirst($userType)]
         ];
-
         $page = (object) [
-            'title' => 'Daftar manajemen yang terdaftar dalam sistem'
+            'title' => 'Daftar ' . ucfirst($userType) . ' yang terdaftar dalam sistem',
         ];
-
-
-        $activeMenu = 'manajemen';
-
-        return view('manajemen.index', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            'activeMenu' => $activeMenu
-        ]);
+        $activeMenu = $userType; // set menu yang sedang aktif
+        return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'userType' => $userType]);
     }
 
-    public function list(Request $request)
+    public function list(string $userType)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
-            'role' => 'manajemen'
+            'role' => $userType
         ]);
 
-        // dd($response->json('data'));
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
-                ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
-                ->addColumn('aksi', function ($manajemen) {  // menambahkan kolom aksi  
-                    $btn  = "<a href=" . url('/manajemen/' . $manajemen['userId'] . '/detail') . " class='btn btn-info btn-sm'>Detail</a>";
+                ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)
+                ->addColumn('aksi', function ($user) use ($userType) {  // pass $userType to the closure
+                    $btn = "<a href=" . url('/' . $userType . '/' . $user['userId'] . '/detail') . " class='btn btn-info btn-sm'>Detail</a>";
 
                     return $btn;
                 })
-                ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html  
+                ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
                 ->make(true);
         }
     }
 
-    public function detailManajemen(string $id)
-    {   
+
+    public function detailUser(string $userType, string $id)
+    {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
             'uid' => $id
         ]);
@@ -70,23 +60,26 @@ class ManajemenController extends Controller
         ]);
 
         $breadcrumb = (object) [
-            'title' => 'Detail Manajemen',
-            'list' => ['Data Pengguna', 'Manajemen', 'Detail Manajemen']
+            'title' => 'Detail ' . ucfirst($userType),
+            'list' => ['Data Pengguna', ucfirst($userType), 'Detail ' . ucfirst($userType)]
         ];
 
-        if ($response->successful() && $responseKegiatan->successful()) {
-            return view('manajemen.detail', [
+        if ($response->successful() || $responseKegiatan->successful()) {
+            return view('user.detail', [
                 'breadcrumb' => $breadcrumb,
-                'activeMenu' => 'apalah',
-                'manajemen' => $response->json('data'),
+                'activeMenu' => 'mbuh',
+                'user' => $response->json('data'),
+                'userType' => $userType,
                 'kegiatan' => $responseKegiatan->json('data')
             ]);
         }
+
+        return redirect('/');
     }
 
-    public function create_ajax()
+    public function create_ajax(string $userType)
     {
-        return view('manajemen.create_ajax');
+        return view('user.create_ajax', ['userType' => $userType]);
     }
 
     public function store_ajax(Request $request)
@@ -120,10 +113,11 @@ class ManajemenController extends Controller
                 $response = Http::withAuthToken()->post("{$this->apiUrl}/api/user", $request->all());
             }
 
+
             if ($response->successful()) {
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data manajemen berhasil disimpan',
+                    'message' => 'Data user berhasil disimpan',
                 ]);
             } else {
                 return response()->json([
@@ -136,12 +130,12 @@ class ManajemenController extends Controller
         return redirect('/');
     }
 
-    public function import()
+    public function import(string $userType)
     {
-        return view('manajemen.import');
+        return view('user.import', ['userType' => $userType]);
     }
 
-    public function import_ajax(Request $request)
+    public function import_ajax(Request $request, string $userType)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
@@ -162,14 +156,14 @@ class ManajemenController extends Controller
             $response = Http::withAuthToken()
                 ->attach('file', $file->get(), 'apa.xlsx')
                 ->withQueryParameters([
-                    'role' => 'manajemen'
+                    'role' => $userType
                 ])
                 ->post("{$this->apiUrl}/api/user/import");
 
             if ($response->successful()) {
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data manajemen berhasil diimport',
+                    'message' => 'Data user berhasil diimport',
                 ]);
             } else {
                 return response()->json([
@@ -181,16 +175,16 @@ class ManajemenController extends Controller
         return redirect('/');
     }
 
-    public function export_excel()
+    public function export_excel(string $userType)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user/export", [
-            'role' => 'manajemen'
+            'role' => $userType
         ]);
 
         if ($response->successful()) {
             // Retrieve file content and metadata
             $fileContent = $response->body();
-            $fileName = "manajemen_" . date('Y-m-d H:i:s') . ".xlsx";
+            $fileName = 'Data' . $userType . "_" . date('Y-m-d H:i:s') . ".xlsx";
 
             // Return the file as a response
             return response($fileContent)
@@ -200,24 +194,24 @@ class ManajemenController extends Controller
 
         return response()->json([
             'status' => false,
-            'message' => 'Failed to fetch the file from the API.',
+            'message' => $response->json('message'),
         ], $response->status());
     }
 
-    public function confirm_ajax(string $id)
+    public function confirm_ajax(string $userType, string $id)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
             'uid' => $id
         ]);
 
         if ($response->successful()) {
-            return view('manajemen.confirm_ajax', ['manajemen' => $response->json('data')]);
+            return view('user.confirm_ajax', ['user' => $response->json('data'), 'userType' => $userType]);
         } else {
-            return view('manajemen.confirm_ajax', ['manajemen' => null]);
+            return view('user.confirm_ajax', ['user' => null, 'userType' => $userType]);
         }
     }
 
-    public function delete_ajax(Request $request, string $id)
+    public function delete_ajax(Request $request, string $_, string $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $response = Http::withAuthToken()
@@ -241,33 +235,20 @@ class ManajemenController extends Controller
         }
     }
 
-    public function show_ajax(string $id)
+    public function edit_ajax(string $userType, string $id)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
             'uid' => $id
         ]);
 
         if ($response->successful()) {
-            return view('manajemen.show_ajax', ['manajemen' => $response->json('data')]);
+            return view('user.edit_ajax', ['user' => $response->json('data'), 'userType' => $userType]);
         } else {
-            return view('manajemen.show_ajax', ['manajemen' => null]);
+            return view('user.edit_ajax', ['user' => null, 'userType' => $userType]);
         }
     }
 
-    public function edit_ajax(string $id)
-    {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
-            'uid' => $id
-        ]);
-
-        if ($response->successful()) {
-            return view('manajemen.edit_ajax', ['manajemen' => $response->json('data')]);
-        } else {
-            return view('manajemen.edit_ajax', ['manajemen' => null]);
-        }
-    }
-
-    public function update_ajax(Request $request, string $id)
+    public function update_ajax(Request $request, string $_, string $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
 
@@ -302,6 +283,12 @@ class ManajemenController extends Controller
                     ->attach('file', $image->get(), 'apa.jpeg')
                     ->withQueryParameters(['uid' => $id])
                     ->put("{$this->apiUrl}/api/user", $data);
+
+                $dat = $response->json('data');
+                session(['nama' => $dat['nama']]);
+                if ($response->successful() && $dat['userId'] == session('user_id')) {
+                    session(['profil_img' => $dat['profileImage']]);
+                }
             } else {
                 $response = Http::withAuthToken()
                     ->withQueryParameters(['uid' => $id])
@@ -311,7 +298,7 @@ class ManajemenController extends Controller
             if ($response->successful()) {
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data manajemen berhasil disimpan',
+                    'message' => 'Data user berhasil disimpan',
                 ]);
             } else {
                 return response()->json([
@@ -321,6 +308,113 @@ class ManajemenController extends Controller
             }
         }
 
+
+        return redirect('/');
+    }
+
+    public function tambah_kompetensi_ajax(string $userType, string $id)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi");
+
+        if ($response->successful()) {
+            return view('user.kompetensi.create_ajax', ['kompetensi' => $response->json('data'), 'userType' => $userType, 'id' => $id]);
+        } else {
+            return view('user.kompetensi.create_ajax', ['kompetensi' => null, 'userType' => $userType, 'id' => $id]);
+        }
+    }
+
+    public function store_kompetensi_ajax(Request $request, string $_, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+
+            $rules = [
+                'list_kompetensi' => 'required|array|min:1', // Ensure it's an array with at least one item
+                'list_kompetensi.*' => 'required|string', // Validate each competency ID exists
+            ];
+
+            // Validate the request
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Prepare the formatted data
+            $formattedData = [
+                'list_kompetensi' => $request->input('list_kompetensi'),
+            ];
+
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->post("{$this->apiUrl}/api/user/kompetensi", $formattedData);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Kompetensi berhasil disimpan',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan kompetensi.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function delete_kompetensi_ajax(Request $request, string $_, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+
+            $rules = [
+                'kompetensiIds' => 'required|array|min:1', // Ensure it's an array with at least one item
+                'kompetensiIds.*' => 'required|string', // Validate each competency ID exists
+            ];
+
+            // Validate the request
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Prepare the formatted data
+            $formattedData = [
+                'list_kompetensi' => $request->input('kompetensiIds'),
+            ];
+
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->delete("{$this->apiUrl}/api/user/kompetensi", $formattedData);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Kompetensi berhasil dihapus',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus kompetensi.'),
+                ]);
+            }
+        }
 
         return redirect('/');
     }

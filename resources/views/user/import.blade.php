@@ -1,9 +1,9 @@
-<form action="{{ url('/admin/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
+<form action="{{ url('/' . $userType . '/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Import Data Admin</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Import data {{ $userType }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
@@ -12,7 +12,7 @@
                     <label>Download Template</label>
                     <a href="{{ asset('contoh_file.xlsx') }}" class="btn btn-info btn-sm" download><i
                             class="fa fa-file-excel"></i>Download</a>
-                    <small id="error-admin_id" class="error-text form-text text-danger"></small>
+                    <small id="error-user_id" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Pilih File</label>
@@ -38,7 +38,7 @@
             },
             submitHandler: function(form) {
                 var formData = new FormData(
-                form); // Jadikan form ke FormData untuk menghandle file 
+                    form); // Jadikan form ke FormData untuk menghandle file 
 
                 $.ajax({
                     url: form.action,
@@ -54,7 +54,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataAdmin.ajax.reload(); // reload datatable 
+                            dataUser.ajax.reload(); // reload datatable 
                         } else { // jika error 
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

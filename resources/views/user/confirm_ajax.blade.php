@@ -1,4 +1,4 @@
-@empty($admin)
+@empty($user)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,18 +11,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/admin') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/' . $admin['userId'] . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/' . $userType . '/' . $user['userId'] . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Admin</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data User</h5>
                     <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
@@ -34,15 +34,15 @@
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
                             <th class="text-right col-3">NIP:</th>
-                            <td class="col-9">{{ $admin['nip'] }}</td>
+                            <td class="col-9">{{ $user['nip'] }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Nama:</th>
-                            <td class="col-9">{{ $admin['nama'] }}</td>
+                            <td class="col-9">{{ $user['nama'] }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Email:</th>
-                            <td class="col-9">{{ $admin['email'] }}</td>
+                            <td class="col-9">{{ $user['email'] }}</td>
                         </tr>
                     </table>
                 </div>
@@ -70,7 +70,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataAdmin.ajax.reload();
+                                window.history.back();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

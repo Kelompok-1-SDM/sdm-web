@@ -11,7 +11,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/jabatan') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
             </div>
         </div>
     </div>
@@ -32,6 +32,12 @@
                     <tr>
                         <th>Nama Jabatan</th>
                         <td>{{ $jabatan['namaJabatan'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td><small
+                                class="badge {{ $jabatan['isPic'] ? 'badge-success' : 'badge-primary' }}">{{ $jabatan['isPic'] ? 'PIC' : 'Anggota' }}</small>
+                        </td>
                     </tr>
                 </table>
             </div>

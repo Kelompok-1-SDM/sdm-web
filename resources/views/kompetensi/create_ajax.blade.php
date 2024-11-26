@@ -10,9 +10,9 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Nama Kompetensi</label>
-                    <input value="" type="text" name="namaKompetensi" id="namaKompetensi" class="form-control"
+                    <input value="" type="text" name="nama_kompetensi" id="nama_kompetensi" class="form-control"
                         required>
-                    <small id="error-namaKompetensi" class="error-text form-text text-danger"></small>
+                    <small id="error-nama_kompetensi" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -27,7 +27,7 @@
     $(document).ready(function() {
         $("#form-tambah").validate({
             rules: {
-                namaKompetensi: {
+                nama_kompetensi: {
                     required: true,
                     minlength: 3,
                     maxlength: 255

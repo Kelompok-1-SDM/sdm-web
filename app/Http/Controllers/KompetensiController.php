@@ -64,7 +64,7 @@ class KompetensiController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
 
             $rules = [
-                'namaKompetensi' => 'required',
+                'nama_kompetensi' => 'required',
             ];
 
             // Validate the request
@@ -163,7 +163,7 @@ class KompetensiController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
 
             $rules = [
-                'namaKompetensi' => 'required',
+                'nama_kompetensi' => 'required',
             ];
 
             // Validate the request

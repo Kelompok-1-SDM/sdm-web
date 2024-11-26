@@ -1,6 +1,6 @@
 <form action="{{ url('/kegiatan/' . $id . '/anggota_store_ajax') }}" method="POST" id="form-tambah">
     @csrf
-    <div id="modal-master" class="modal-dialog modal-lg" jabatan="document">
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Anggota Penugasan</h5>
@@ -26,16 +26,12 @@
                             <select name="jabatan" id="jabatan" class="form-control">
                                 <option value="">- Pilih Role -</option>
                                 @foreach ($jabatan as $l)
-                                    <option value="{{ $l['jabatanId'] }}">{{ $l['namaJabatan'] }} - {{$l['isPic'] ? 'PIC' : 'Anggota'}}</option>
+                                    <option value="{{ $l['jabatanId'] }}">{{ $l['namaJabatan'] }} -
+                                        {{ $l['isPic'] ? 'PIC' : 'Anggota' }}</option>
                                 @endforeach
                             </select>
                             <small id="error-jabatan" class="error-text form-text text-danger"></small>
                         </div>
-                    </div>
-                    <!-- Aligned buttons to the right -->
-                    <div class="card-footer text-right">
-                        <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                        <button type="button" id="add-user" class="btn btn-primary">Tambahkan</button>
                     </div>
                 </div>
 
@@ -60,19 +56,15 @@
     $(document).ready(function() {
         let assignedUsers = {};
 
-        // Add user to the list
-        $("#add-user").on("click", function() {
+        // Function to add user to the list
+        function addUserToList() {
             let userId = $("#userId").val();
             let jabatan = $("#jabatan").val();
             let userName = $("#userId option:selected").text();
             let jabatanName = $("#jabatan option:selected").text();
 
             if (!userId || !jabatan) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Pastikan semua field telah diisi."
-                });
+                // Do nothing until both fields are selected
                 return;
             }
 
@@ -84,7 +76,7 @@
                 // Add a new user to the list
                 assignedUsers[userId] = {
                     userId,
-                    jabatan
+                    jabatan,
                 };
                 let listItem = `
                 <li id="user-item-${userId}">
@@ -101,6 +93,13 @@
             // Reset the dropdowns
             $("#userId").val("");
             $("#jabatan").val("");
+        }
+
+        // Automatically add user when both dropdowns are selected
+        $("#userId, #jabatan").on("change", function() {
+            if ($("#userId").val() && $("#jabatan").val()) {
+                addUserToList();
+            }
         });
 
         // Remove user from the list
@@ -136,7 +135,7 @@
                 Swal.fire({
                     icon: "warning",
                     title: "Tidak Ada Anggota Ditambahkan",
-                    text: "Tambahkan setidaknya satu anggota sebelum menyimpan."
+                    text: "Tambahkan setidaknya satu anggota sebelum menyimpan.",
                 });
                 return;
             }
@@ -150,22 +149,22 @@
                         Swal.fire({
                             icon: "success",
                             title: "Berhasil",
-                            text: response.message
+                            text: response.message,
                         });
                         location.reload();
                     } else {
                         // Display validation errors
-                        $('.error-text').text('');
+                        $(".error-text").text("");
                         $.each(response.msgField, function(prefix, val) {
-                            $('#error-' + prefix).text(val[0]);
+                            $("#error-" + prefix).text(val[0]);
                         });
                         Swal.fire({
                             icon: "error",
                             title: "Terjadi Kesalahan",
-                            text: response.message
+                            text: response.message,
                         });
                     }
-                }
+                },
             });
         });
     });
