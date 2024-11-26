@@ -10,9 +10,19 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Nama Jabatan</label>
-                    <input value="" type="text" name="namaJabatan" id="namaJabatan" class="form-control"
+                    <input value="" type="text" name="nama_jabatan" id="nama_jabatan" class="form-control"
                         required>
-                    <small id="error-namaJabatan" class="error-text form-text text-danger"></small>
+                    <small id="error-nama_jabatan" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="is_pic">Tipe Role</label>
+                    <select name="is_pic" id="is_pic" class="form-control" required>
+                        <option value="">- Pilih Tipe Role -</option>
+                        <option value="true">PIC</option>
+                        <option value="false">Anggota</option>
+                    </select>
+                    <small id="error-is_pic" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -27,7 +37,7 @@
     $(document).ready(function() {
         $("#form-tambah").validate({
             rules: {
-                namaJabatan: {
+                nama_jabatan: {
                     required: true,
                     minlength: 3,
                     maxlength: 255

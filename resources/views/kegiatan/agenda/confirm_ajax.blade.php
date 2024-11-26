@@ -1,4 +1,4 @@
-@empty($dosen)
+@empty($current)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,18 +11,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/dosen') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/dosen/' . $dosen['userId'] . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/kegiatan/' . $id . '/agenda_delete_ajax/') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Dosen</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Penugasan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
@@ -33,16 +33,25 @@
                     </div>
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
-                            <th class="text-right col-3">NIP:</th>
-                            <td class="col-9">{{ $dosen['nip'] }}</td>
+                            <th class="text-right col-3">Nama Agenda:</th>
+                            <td class="col-9">{{ $current['namaAgenda'] }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Nama:</th>
-                            <td class="col-9">{{ $dosen['nama'] }}</td>
+                            <th class="text-right col-3">Jadwal Agenda:</th>
+                            <td class="col-9">
+                                {{ $current['jadwalAgenda'] ? \Carbon\Carbon::parse($current['jadwalAgenda'])->format('Y-m-d') : '' }}
+                            </td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Email:</th>
-                            <td class="col-9">{{ $dosen['email'] }}</td>
+                            <th class="text-right col-3">Deskripsi Agenda:</th>
+                            <td class="col-9">{{ $current['deskripsiAgenda'] }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Status Agenda:</th>
+                            <td class="col-9">
+                                <small
+                                    class="badge {{ $current['isDone'] ? 'badge-success' : 'badge-warning' }}">{{ $current['isDone'] ? 'Selesai' : 'Belum Selesai' }}</small>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -70,7 +79,8 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataDosen.ajax.reload();
+                                window.history.back()
+                                location.reload()
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

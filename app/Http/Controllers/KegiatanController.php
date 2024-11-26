@@ -35,7 +35,7 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function list(Request $request)
+    public function list()
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
         if ($response->successful()) {
@@ -141,12 +141,8 @@ class KegiatanController extends Controller
     public function anggota_edit_ajax(Request $request, string $id)
     {
         $userData = json_decode($request->query('data'), true);
-        if ($userData['status'] == 'ditugaskan') {
-            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", ['role' => 'dosen']);
-            return view('kegiatan.anggota.edit_ajax', ['dosen' => $response->json('data'), 'id' => $id, 'current' => $userData]);
-        }
-
-        return view('kegiatan.anggota.edit_ajax', ['id' => $id, 'current' => $userData]);
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan");
+        return view('kegiatan.anggota.edit_ajax', ['jabatan' => $response->json('data'), 'id' => $id, 'current' => $userData]);
     }
 
     public function anggota_update_ajax(Request $request, string $id)
@@ -154,9 +150,8 @@ class KegiatanController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             // Define the validation rules
             $rules = [
-                'userId' => 'required|string',
-                'jabatan' => 'required|string',    // Each role must be provided
-                'status' => 'required|string',
+                'jabatan_id' => 'required|string',
+                'user_id' => 'required|string'
             ];
 
             // Validate the request
@@ -176,9 +171,8 @@ class KegiatanController extends Controller
             ];
 
             $newReq['list_user_ditugaskan'][] = [
-                'uid_user' => $request->userId,
-                'uid_jabatan'   => $request->jabatan,
-                'status' => $request->status
+                'uid_user' => $request->user_id,
+                'uid_jabatan'   => $request->jabatan_id,
             ];
 
             // Make the API request with the formatted data
@@ -239,54 +233,23 @@ class KegiatanController extends Controller
         }
     }
 
-    public function edit_ajax(Request $request)
+    public function create_ajax()
     {
-        $kegData = json_decode($request->query('data'), true);
-
-        $responseKompetensi = Http::withAuthToken()->get(
-            "{$this->apiUrl}/api/kompetensi",
-        );
-
-        if ($responseKompetensi->successful()) {
-            $kompetensi = $responseKompetensi->json('data');
-
-            $breadcrumb = (object) [
-                'title' => 'Edit Kegiatan',
-                'list' => ['Kegiatan', 'Edit Kegiatan']
-            ];
-
-            $page = (object) [
-                'title' => 'Edit Data Kegiatan'
-            ];
-
-            $activeMenu = 'kegiatan';
-
-            // Render view dengan data yang relevan
-            return view('kegiatan.edit_ajax', [
-                'breadcrumb' => $breadcrumb,
-                'kompetensi' => $kompetensi,
-                'page' => $page,
-                'activeMenu' => $activeMenu,
-                'kegiatan' => $kegData
-            ]);
-        } else {
-            // Jika respons gagal, tampilkan error atau redirect
-            return redirect()->back()->withErrors(['error' => 'Gagal mengambil data kegiatan.']);
-        }
+        return view('kegiatan.create_ajax');
     }
 
-    public function update_ajax(Request $request, string $id)
+    public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
             // Validation rules
             $rules = [
-                'nama_kegiatan' => 'nullable',
-                'tanggal_mulai' => 'nullable',
-                'tanggal_selesai' => 'nullable',
-                'deskripsi' => 'nullable',
-                'lokasi' => 'nullable',
-                'assigned_kompetensis' => 'required|array',
-                'assigned_kompetensis.*.kompetensiId' => 'required|distinct'
+                'judul_kegiatan' => 'required',
+                'tipe_kegiatan' => 'required',
+                'lokasi' => 'required',
+                'tanggal_mulai' => 'required',
+                'tanggal_akhir' => 'required',
+                'deskripsi' => 'required',
+                'is_done' => 'required'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -299,30 +262,59 @@ class KegiatanController extends Controller
                 ]);
             }
 
-            // Extract all 'kompetensiId' values from 'assigned_kompetensis'
-            $kompetensiIds = [];
+            // Send data to external API to update 'kegiatan'
+            $response = Http::withAuthToken()
+                ->post("{$this->apiUrl}/api/kegiatan/", $request->all());
 
-            foreach ($request->assigned_kompetensis as $kompetensi) {
-                // Ensure 'kompetensiId' is added to the array
-                $kompetensiIds[] = $kompetensi['kompetensiId'];
+            if ($response->successful()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data kegiatan berhasil disimpan.',
+                ]);
             }
+        }
+    }
 
-            // Combine the kompetensiIds with other request data
-            $payload = [
-                'nama_kegiatan' => $request->nama_kegiatan,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'deskripsi' => $request->deskripsi,
-                'lokasi' => $request->lokasi,
-                'list_kompetensi' => $kompetensiIds, // This is the array of kompetensiId values
+    public function edit_ajax(Request $request)
+    {
+        $kegData = json_decode($request->query('data'), true);
+
+        // Render view dengan data yang relevan
+        return view('kegiatan.edit_ajax', [
+            'kegiatan' => $kegData
+        ]);
+    }
+
+    public function update_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Validation rules
+            $rules = [
+                'judul_kegiatan' => 'nullable',
+                'tipe_kegiatan' => 'nullable',
+                'lokasi' => 'nullable',
+                'tanggal_mulai' => 'nullable',
+                'tanggal_akhir' => 'nullable',
+                'deskripsi' => 'nullable',
+                'is_done' => 'nullable'
             ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal.',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
 
             // Send data to external API to update 'kegiatan'
             $response = Http::withAuthToken()
                 ->withQueryParameters([
                     'uid' => $id
                 ])
-                ->put("{$this->apiUrl}/api/kegiatan/", $payload);
+                ->put("{$this->apiUrl}/api/kegiatan/", $request->all());
 
             if ($response->successful()) {
                 return response()->json([
@@ -345,7 +337,6 @@ class KegiatanController extends Controller
         $kegiatan = json_decode($request->query('data'), true);
         return view('kegiatan.confirm_ajax', ['kegiatan' => $kegiatan]);
     }
-
 
     public function delete_ajax(Request $request, string $id)
     {
@@ -373,15 +364,416 @@ class KegiatanController extends Controller
         ], 400);
     }
 
-    public function create_agenda(Request $request)
+    public function tambah_kompetensi_ajax(string $id)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/agenda",
-        );
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi");
 
         if ($response->successful()) {
-            return view('kegiatan.create_agenda', ['agenda' => $response->json('data')]);
+            return view('kegiatan.kompetensi.create_ajax', ['kompetensi' => $response->json('data'), 'id' => $id]);
         } else {
-            return view('kegiatan.create_agenda', ['agenda' => null]);
+            return view('kegiatan.kompetensi.create_ajax', ['kompetensi' => null, 'id' => $id]);
         }
+    }
+
+    public function store_kompetensi_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+
+            $rules = [
+                'list_kompetensi' => 'required|array|min:1', // Ensure it's an array with at least one item
+                'list_kompetensi.*' => 'required|string', // Validate each competency ID exists
+            ];
+
+            // Validate the request
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Prepare the formatted data
+            $formattedData = [
+                'list_kompetensi' => $request->input('list_kompetensi'),
+            ];
+
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->post("{$this->apiUrl}/api/kegiatan/kompetensi", $formattedData);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Kompetensi berhasil disimpan',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan kompetensi.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function delete_kompetensi_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+
+            $rules = [
+                'kompetensiIds' => 'required|array|min:1', // Ensure it's an array with at least one item
+                'kompetensiIds.*' => 'required|string', // Validate each competency ID exists
+            ];
+
+            // Validate the request
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Prepare the formatted data
+            $formattedData = [
+                'list_kompetensi' => $request->input('kompetensiIds'),
+            ];
+
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->delete("{$this->apiUrl}/api/kegiatan/kompetensi", $formattedData);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Kompetensi berhasil dihapus',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus kompetensi.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function lampiran_create_ajax(string $id)
+    {
+        return view('kegiatan.lampiran.create_ajax', ['id' => $id]);
+    }
+
+    public function lampiran_store_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                // validasi file harus xls atau xlsx, max 1MB 
+                'file' => [
+                    'required',
+                    'max:10240', // 10MB
+                    'mimetypes:application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/pdf,text/plain,image/jpeg,image/png,image/gif,image/svg+xml,image/bmp,image/webp'
+                ]
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $file = $request->file('file');  // ambil file dari request 
+            $response = Http::withAuthToken()
+                ->attach('files', $file->get(), $file->getClientOriginalName())
+                ->withQueryParameters([
+                    'uid_kegiatan' => $id
+                ])
+                ->post("{$this->apiUrl}/api/lampiran");
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Data lampiran berhasil diimport',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message'),
+                ]);
+            }
+        }
+        return redirect('/');
+    }
+
+    public function lampiran_delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->delete("{$this->apiUrl}/api/lampiran");
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Lampiran berhasil dihapus',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus lampiran.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_create_ajax(string $id)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/penugasan", ['uid_kegiatan' => $id]);
+        if ($response->successful()) {
+
+            return view('kegiatan.agenda.create_ajax', ['penugasan' => $response->json('data'), 'id' => $id]);
+        }
+
+        return view('kegiatan.agenda.create_ajax', ['error' => $response->json('data.message'), 'penugasan' => null, 'id' => $id]);
+    }
+
+    public function agenda_store_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'nama_agenda' => 'required',
+                'jadwal_agenda' => 'required|date', // Validate as a date
+                'deskripsi_agenda' => 'required|string',
+                'is_done' => 'nullable|in:true,false', // Explicit validation for boolean-like strings
+                'list_uid_user_kegiatan' => 'required|array|min:1', // Must be an array
+                'list_uid_user_kegiatan.*' => 'required|string', // Each item must be a string
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Prepare data for API submission
+            $formattedData = [
+                'nama_agenda' => $request->nama_agenda,
+                'jadwal_agenda' => $request->jadwal_agenda,
+                'deskripsi_agenda' => $request->deskripsi_agenda,
+                'is_done' => $request->is_done,
+                'list_uid_user_kegiatan' => $request->list_uid_user_kegiatan,
+            ];
+
+            // dd($formattedData);
+
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid_kegiatan' => $id
+                ])
+                ->post("{$this->apiUrl}/api/agenda", $formattedData);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Agenda berhasil disimpan',
+                ]);
+            } else {
+                dd($response->json('data'));
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan agenda.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_detail(string $id)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/agenda", [
+            'uid' => $id
+        ]);
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Agenda',
+            'list' => ['Kegiatan', 'Detail Kegiatan', 'Detail Agenda']
+        ];
+
+        if ($response->successful()) {
+            $data = $response->json('data');
+
+            return view('kegiatan.agenda.detail', [
+                'breadcrumb' => $breadcrumb,
+                'activeMenu' => 'apalah',
+                'data' => $data
+            ]);
+        } else if ($response->status() == 401) {
+            return abort(401, 'Anda tidak dapat melihat agenda ini');
+        } else {
+            return back();
+        }
+    }
+
+    public function agenda_edit_ajax(Request $request, string $id)
+    {
+        $agendaData = json_decode($request->query('data'), true);
+        return view('kegiatan.agenda.edit_ajax', ['id' => $id, 'current' => $agendaData]);
+    }
+
+    public function agenda_update_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'nama_agenda' => 'nullable',
+                'jadwal_agenda' => 'nullable|date', // Validate as a date
+                'deskripsi_agenda' => 'nullable|string',
+                'is_done' => 'nullable|in:true,false', // Explicit validation for boolean-like strings
+                'list_uid_user_kegiatan' => 'nullable|array|min:1', // Must be an array
+                'list_uid_user_kegiatan.*' => 'nullable|string', // Each item must be a string
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Filter only existing keys from the request to include in the payload
+            $allowedKeys = ['nama_agenda', 'jadwal_agenda', 'deskripsi_agenda', 'is_done', 'list_uid_user_kegiatan'];
+            $formattedData = $request->only($allowedKeys);
+            
+
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id,
+                ])
+                ->put("{$this->apiUrl}/api/agenda", $formattedData);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Agenda berhasil diperbarui',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat memperbarui agenda.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_confirm_ajax(Request $request, string $id)
+    {
+        $agendaData = json_decode($request->query('data'), true);
+        return view('kegiatan.agenda.confirm_ajax', ['id' => $id, 'current' => $agendaData]);
+    }
+
+    public function agenda_delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->delete("{$this->apiUrl}/api/agenda");
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Lampiran berhasil dihapus',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus lampiran.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_anggota_create_ajax(Request $request, string $id)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/penugasan", ['uid_kegiatan' => $id]);
+        if ($response->successful()) {
+
+            return view('kegiatan.agenda.anggota.create_ajax', ['penugasan' => $response->json('data'), 'id' => $request->query('uid_agenda')]);
+        }
+
+        return view('kegiatan.agenda.anggota.create_ajax', ['error' => $response->json('data.message'), 'penugasan' => null, 'id' => $request->query('uid_agenda')]);
+    }
+
+    public function agenda_anggota_confirm_ajax(Request $request, string $id)
+    {
+        $userData = json_decode($request->query('data'), true);
+        return view('kegiatan.agenda.anggota.confirm_ajax', ['penugasan' => $userData, 'id' => $id]);
+    }
+
+    public function agenda_anggota_delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id,
+                    'uid_user_kegiatan' => $request->uid_user_kegiatan
+                ])
+                ->delete("{$this->apiUrl}/api/agenda/user");
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Anggota berhasil dihapus dari agenda',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus anggota dari agenda.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_progress_create_ajax(string $id)
+    {
+        return view('kegiatan.agenda.progress.create_ajax', ['id' => $id]);
     }
 }

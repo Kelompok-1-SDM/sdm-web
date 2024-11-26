@@ -5,7 +5,8 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('jabatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                <button onclick="modalAction('{{ url('jabatan/create_ajax') }}')"
+                    class="btn btn-sm btn-success mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -40,6 +41,7 @@
                     <tr>
                         <th>Nomor</th>
                         <th>Nama jabatan</th>
+                        <th>Role</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -87,6 +89,14 @@
                         orderable: true,
                         searchable: true
                     },
+                    {
+                        data: 'isPic',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            var badgeClass = row.isPic ? 'badge-success' : 'badge-primary';
+                            return `<small class="badge ${badgeClass}">${data ? 'PIC' : 'Anggota'}</small>`;
+                        },
+                    }, // Jabatan
                     {
                         data: "aksi",
                         className: "text-center",

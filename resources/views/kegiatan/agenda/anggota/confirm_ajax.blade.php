@@ -1,4 +1,4 @@
-@empty($manajemen)
+@empty($penugasan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,18 +11,19 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/manajemen') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/manajemen/' . $manajemen['userId'] . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/kegiatan/' . $id . '/agenda_anggota_delete_ajax/') }}" method="POST" id="form-delete">
+        <input type="hidden" name="uid_user_kegiatan" value="{{ $penugasan['userKegiatanId'] }}">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Manajemen</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Penugasan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
@@ -34,16 +35,25 @@
                     <table class="table table-sm table-bordered table-striped">
                         <tr>
                             <th class="text-right col-3">NIP:</th>
-                            <td class="col-9">{{ $manajemen['nip'] }}</td>
+                            <td class="col-9">{{ $penugasan['nip'] }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Nama:</th>
-                            <td class="col-9">{{ $manajemen['nama'] }}</td>
+                            <td class="col-9">{{ $penugasan['nama'] }}</td>
                         </tr>
                         <tr>
                             <th class="text-right col-3">Email:</th>
-                            <td class="col-9">{{ $manajemen['email'] }}</td>
+                            <td class="col-9">{{ $penugasan['email'] }}</td>
                         </tr>
+                        @if ($penugasan['profileImage'] != '')
+                            <tr>
+                                <th class="text-right col-3">Foto Profil:</th>
+                                <td class="col-9">
+                                    <img class='direct-chat-img' style='float: none;' src='{{ $penugasan['profileImage'] }}'
+                                        alt='Ini gambar'>
+                                </td>
+                            </tr>
+                        @endif
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -70,7 +80,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataManajemen.ajax.reload();
+                                location.reload();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

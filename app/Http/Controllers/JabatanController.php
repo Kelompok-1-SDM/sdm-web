@@ -30,7 +30,7 @@ class JabatanController extends Controller
         return view('jabatan.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
-    public function list(Request $request)
+    public function list()
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan");
 
@@ -64,7 +64,8 @@ class JabatanController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
 
             $rules = [
-                'namaJabatan' => 'required',
+                'nama_jabatan' => 'required',
+                'is_pic' => 'required'
             ];
 
             // Validate the request
@@ -163,7 +164,8 @@ class JabatanController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
 
             $rules = [
-                'namaJabatan' => 'required',
+                'nama_jabatan' => 'required',
+                'is_pic' => 'required'
             ];
 
             // Validate the request

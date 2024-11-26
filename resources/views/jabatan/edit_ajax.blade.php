@@ -11,7 +11,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/jabatan') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
             </div>
         </div>
     </div>
@@ -26,12 +26,24 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
+
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Nama Jabatan</label>
-                        <input value="{{ $jabatan['namaJabatan'] }}" type="text" name="namaJabatan"
-                            id="namaJabatan" class="form-control">
-                        <small id="error-namaJabatan" class="error-text form-text text-danger"></small>
+                        <label for="nama_jabatan">Nama Jabatan</label>
+                        <input value="{{ $jabatan['namaJabatan'] }}" type="text" name="nama_jabatan" id="nama_jabatan"
+                            class="form-control">
+                        <small id="error-nama_jabatan" class="error-text form-text text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="is_pic">Tipe Role</label>
+                        <select name="is_pic" id="is_pic" class="form-control" required>
+                            <option value="">- Pilih Tipe Role -</option>
+                            <option value="true" {{ $jabatan['isPic'] == true ? 'selected' : '' }}>PIC</option>
+                            <option value="false" {{ $jabatan['isPic'] == false ? 'selected' : '' }}>Anggota
+                            </option>
+                        </select>
+                        <small id="error-is_pic" class="error-text form-text text-danger"></small>
                     </div>
                 </div>
 

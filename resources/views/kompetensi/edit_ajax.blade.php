@@ -11,7 +11,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/kompetensi') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
             </div>
         </div>
     </div>
@@ -29,9 +29,9 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Nama Kompetensi</label>
-                        <input value="{{ $kompetensi['namaKompetensi'] }}" type="text" name="namaKompetensi"
-                            id="namaKompetensi" class="form-control">
-                        <small id="error-namaKompetensi" class="error-text form-text text-danger"></small>
+                        <input value="{{ $kompetensi['namaKompetensi'] }}" type="text" name="nama_kompetensi"
+                            id="nama_kompetensi" class="form-control">
+                        <small id="error-nama_kompetensi" class="error-text form-text text-danger"></small>
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-                    namaKompetensi: {
+                    nama_kompetensi: {
                         minlength: 3,
                         maxlength: 255
                     },

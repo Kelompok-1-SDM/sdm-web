@@ -11,7 +11,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/kegiatan') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
             </div>
         </div>
     </div>
@@ -38,50 +38,34 @@
                         </tr>
                         <tr>
                             <th>Judul</th>
-                            <td>{{ $kegiatan['judulKegiatan'] }}</td>
+                            <td>{{ $kegiatan['judul'] }}</td>
                         </tr>
                         <tr>
-                            <th>Taggal</th>
-                            <td>{{ date_format(date_create($kegiatan['tanggal']), 'd F Y, H:i') }}</td>
+                            <th>Taggal Mulai</th>
+                            <td>{{ date_format(date_create($kegiatan['tanggalMulai']), 'd F Y, H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Taggal Akhir</th>
+                            <td>{{ date_format(date_create($kegiatan['tanggalAkhir']), 'd F Y, H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipe kegiatan</th>
+                            <td><small
+                                    class="badge {{ $kegiatan['tipeKegiatan'] == 'jti' ? 'badge-success' : 'badge-warning' }}">{{ $kegiatan['tipeKegiatan'] }}</small>
+                            </td>
                         </tr>
                         <tr>
                             <th>Deskripsi</th>
                             <td>{{ $kegiatan['deskripsi'] }}</td>
                         </tr>
                         <tr>
-                            <th>Kompentensi</th>
-                            <td>{{ implode(', ', $kegiatan['kompetensi']) }}</td>
+                            <th>Status kegiatan</th>
+                            <td><small
+                                    class="badge {{ $kegiatan['isDone'] ? 'badge-success' : 'badge-primary' }}">{{ $kegiatan['isDone'] ? 'Selesai' : 'Belum Selesai' }}</small>
+                            </td>
                         </tr>
                     </table>
 
-                    {{-- <div class="card m-1" style="position: relative; left: 0px; top: 0px;">
-                        <div class="card-header ui-sortable-handle" style="cursor: move;">
-                            <h3 class="card-title">
-                                <i class="ion ion-clipboard mr-1"></i>
-                                Detail kegiatan
-                            </h3>
-                        </div>
-
-                        <div class="card-body">
-                            <ul class="todo-list ui-sortable" data-widget="todo-list">
-                                @foreach ($kegiatan->detail as $detail)
-                                    <li id="detail-{{ $detail->detail_id }}">
-                                        <span class="text">{{ $detail->barang->barang_nama }}</span>
-
-                                        <small class="badge badge-secondary">
-                                            Jumlah {{ $detail->jumlah }}
-                                        </small>
-                                        <small class="badge badge-success">
-                                            Harga {{ number_format($detail->harga) }}
-                                        </small>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div> --}}
                     <div class="modal-footer">
                         <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
                         <button type="submit" class="btn btn-primary">Ya, Hapus</button>
@@ -104,7 +88,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                datakegiatan.ajax.reload();
+                                window.history.back();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {
