@@ -33,21 +33,26 @@
                         <th class="text-right col-3">Deskripsi Progress:</th>
                         <td class="col-9">{{ $progress['deskripsiProgress'] }}</td>
                     </tr>
-                    @if ($progress['profileImage'] != '')
+
+                    @if (!empty($progress['attachments']))
                         <tr>
-                            <th class="text-right col-3">Foto Profil:</th>
-                            <td class="col-9">
-                                <img class='direct-chat-img' style='float: none;' src='{{ $progress['profileImage'] }}'
-                                    alt='Ini gambar'>
+                            <th class="text-right col-3">Attachments:</th>
+                            <td>
+                                <ul>
+                                    @foreach ($progress['attachments'] as $attachment)
+                                        <li>
+                                            <a href="{{ $attachment['url'] }}" target="_blank">
+                                                {{ $attachment['nama'] }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </td>
                         </tr>
-                    @endif
-                    @if (isset($progress['isPIc']))
+                    @else
                         <tr>
-                            <th class="text-right col-3">Jabatan:</th>
-                            <td class="col-9"><small
-                                    class="badge {{ $progress['isPic'] ? 'badge-success' : 'badge-primary' }}">{{ $progress['namaJabatan'] }}-{{ $progress['isPic'] ? 'PIC' : 'Anggota' }}</small>
-                            </td>
+                            <th class="text-right col-3">Attachments:</th>
+                            <p>No attachments available.</p>
                         </tr>
                     @endif
 

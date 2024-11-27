@@ -98,8 +98,8 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <!-- Progress URL -->
-                            <strong class="text-primary" 
-                                onclick="modalAction('{{ url('kegiatan/' . $data['agendaId'] . '/agenda_progress_show_ajax') }}')">{{ Str::limit($progress['deskripsiProgress'], 100) }}</strong>
+                            <strong class="text-primary"
+                                onclick="modalAction('{{ url('kegiatan/agenda_progress_show_ajax?data=' . urlencode(json_encode($progress))) }}')">{{ Str::limit($progress['deskripsiProgress'], 100) }}</strong>
                             <br>
                             <!-- Timestamps -->
                             <small class="text-muted">
@@ -108,9 +108,10 @@
                         </div>
                         <!-- Actions -->
                         <div class="btn-group">
-                            <a class="btn btn-sm btn-primary" href="{{ $progress['progressId'] }}">
+                            <button class="btn btn-sm btn-primary"
+                                onclick="modalAction('{{ url('kegiatan/' . $data['agendaId'] . '/agenda_progress_edit_ajax?data=' . urlencode(json_encode($progress))) }}')">
                                 <i class="fas fa-edit"></i>
-                            </a>
+                            </button>
                             <button class="btn btn-sm btn-danger delete-progress" data-id="{{ $progress['progressId'] }}">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -194,7 +195,7 @@
         $('.delete-progress').on('click', function() {
             const progressId = $(this).data('id'); // Get the Lampiran ID
             const deleteUrl =
-                `${baseUrl}/kegiatan/${progressId}/progress_delete_ajax`; // Construct the delete URL
+                `${baseUrl}/kegiatan/${progressId}/agenda_progress_delete_ajax`; // Construct the delete URL
 
             Swal.fire({
                 title: 'Hapus Progress?',
