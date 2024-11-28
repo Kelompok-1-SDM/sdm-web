@@ -23,7 +23,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-
     && apt-get install -y nodejs
 
 # Set working directory
@@ -34,9 +33,6 @@ COPY . .
 
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
-
-# Build frontend assets
-RUN npm install && npm run prod
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
