@@ -9,15 +9,17 @@
                     class='badge ml-2 {{ $data['tipeKegiatan'] === 'jti' ? 'badge-success' : 'badge-warning' }}'>{{ $data['tipeKegiatan'] }}</small>
             </h3>
             <div class="card-tools">
-                <button
-                    onclick="modalAction('{{ url('kegiatan/edit_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['kompetensi', 'lampiran', 'agenda', 'users']))))) }}')"
-                    class="btn btn-sm btn-warning mt-1">Edit</button>
-                <button
-                    onclick="modalAction('{{ url(
-                        'kegiatan/delete_ajax?data=' .
-                            urlencode(json_encode(array_diff_key($data, array_flip(['kompetensi', 'lampiran', 'agenda', 'users'])))),
-                    ) }}')"
-                    class="btn btn-sm btn-danger mt-1">Hapus</button>
+                @if (session('role') != 'dosen')
+                    <button
+                        onclick="modalAction('{{ url('kegiatan/edit_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['kompetensi', 'lampiran', 'agenda', 'users']))))) }}')"
+                        class="btn btn-sm btn-warning mt-1">Edit</button>
+                    <button
+                        onclick="modalAction('{{ url(
+                            'kegiatan/delete_ajax?data=' .
+                                urlencode(json_encode(array_diff_key($data, array_flip(['kompetensi', 'lampiran', 'agenda', 'users'])))),
+                        ) }}')"
+                        class="btn btn-sm btn-danger mt-1">Hapus</button>
+                @endif
             </div>
 
         </div>
@@ -53,8 +55,12 @@
             <div class="card-header">
                 <h3 class="card-title">Kompetensi yang dimiliki</h3>
                 <div class="card-tools">
-                    <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/tambah_kompetensi_ajax') }}')"
-                        class="btn btn-sm btn-primary mt-1">Tambah Kompetensi</button>
+                    @if (session('role') != 'dosen')
+                        <button
+                            onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/tambah_kompetensi_ajax') }}')"
+                            class="btn btn-sm btn-primary mt-1">Tambah Kompetensi</button>
+                    @endif
+
                 </div>
             </div>
             <div class="card-body">
@@ -89,7 +95,9 @@
                         <tr>
                             <th class="text-center">Nomor</th>
                             <th class="text-center">Nama Kompetensi</th>
-                            <th class="text-center">Pilih</th>
+                            @if (session('role') != 'dosen')
+                                <th class="text-center">Pilih</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -103,8 +111,11 @@
         <div class="card-header">
             <h3 class="card-title">Dosen yang ditugaskan</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/anggota_create_ajax') }}')"
-                    class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
+                @if (session('role') != 'dosen')
+                    <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/anggota_create_ajax') }}')"
+                        class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
+                @endif
+
             </div>
         </div>
         <div class="card-body">
@@ -153,7 +164,10 @@
                         <th class="text-center">Nama</th>
                         <th class="text-center">Email</th>
                         <th class="text-center">Jabatan</th>
-                        <th class="text-center">Aksi</th>
+                        @if (session('role') != 'dosen')
+                            <th class="text-center">Aksi</th>
+                        @endif
+
                     </tr>
                 </thead>
                 <tbody>
@@ -184,11 +198,13 @@
                     <ul class="todo-list" id="agenda-list" data-widget="todo-list"></ul>
                 </div>
                 <!-- /.card-body -->
-                <div class="card-footer clearfix">
-                    <button type="button" class="btn btn-primary float-right"
-                        onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/agenda_create_ajax') }}')"><i
-                            class="fas fa-plus"></i> Tambah Agenda</button>
-                </div>
+                @if (session('role') != 'dosen' || $isPic)
+                    <div class="card-footer clearfix">
+                        <button type="button" class="btn btn-primary float-right"
+                            onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/agenda_create_ajax') }}')"><i
+                                class="fas fa-plus"></i> Tambah Agenda</button>
+                    </div>
+                @endif
             </div>
             <!-- /.card -->
         </section>
@@ -218,22 +234,27 @@
                                     </small>
                                 </div>
                                 <!-- Actions -->
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-danger delete-lampiran"
-                                        data-id="{{ $lampiran['lampiranId'] }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
+                                @if (session('role') != 'dosen' || $isPic)
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-danger delete-lampiran"
+                                            data-id="{{ $lampiran['lampiranId'] }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                @endif
+
                             </li>
                         @endforeach
                     </ul>
                 </div>
-                <div class="card-footer text-right">
-                    <button type="button" class="btn btn-success add-lampiran"
-                        onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/lampiran_create_ajax') }}')">
-                        <i class="fas fa-plus"></i> Tambah Lampiran
-                    </button>
-                </div>
+                @if (session('role') != 'dosen' || $isPic)
+                    <div class="card-footer text-right">
+                        <button type="button" class="btn btn-success add-lampiran"
+                            onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/lampiran_create_ajax') }}')">
+                            <i class="fas fa-plus"></i> Tambah Lampiran
+                        </button>
+                    </div>
+                @endif
             </div>
         </section>
 
@@ -258,11 +279,11 @@
 
         var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         $(document).ready(function() {
             // Initialize DataTables with dynamic data
@@ -294,15 +315,17 @@
                             return `<small class="badge ${badgeClass}">${data} - ${row.isPic ? 'PIC' : 'Anggota'}</small>`;
                         },
                     }, // Jabatan
-                    {
-                        data: 'userId',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            return `
+                    @if (session('role') != 'dosen')
+                        {
+                            data: 'userId',
+                            className: 'text-center',
+                            render: function(data, type, row) {
+                                return `
                         <button class="btn btn-sm btn-warning" onclick="modalAction('${baseUrl}/kegiatan/${kegiatanId}/anggota_edit_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Edit</button>
                         <button class="btn btn-sm btn-danger" onclick="modalAction('${baseUrl}/kegiatan/${kegiatanId}/anggota_delete_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Hapus</button>`;
-                        },
-                    }, // Aksi
+                            },
+                        }, // Aksi
+                    @endif
                 ],
                 paging: true, // Enable pagination
                 pageLength: 10, // Items per page
@@ -324,15 +347,17 @@
                             data: 'namaKompetensi',
                             className: 'text-center',
                         }, // Nama
-                        {
-                            data: 'kompetensiId',
-                            className: 'text-center',
-                            render: function(data, type, row) {
-                                return `
+                        @if (session('role') != 'dosen')
+                            {
+                                data: 'kompetensiId',
+                                className: 'text-center',
+                                render: function(data, type, row) {
+                                    return `
                         <input type="checkbox" class="delete-checkbox" data-kompetensi-id="${data}" />
                     `;
-                            },
-                        } // Aksi
+                                },
+                            } // Aksi
+                        @endif
                     ],
                     paging: true, // Enable pagination
                     pageLength: 10, // Items per page
@@ -343,37 +368,93 @@
                 });
 
                 // Track selected kompetensi IDs
-                let selectedKompetensi = new Set();
+                @if (session('role') != 'dosen')
+                    let selectedKompetensi = new Set();
 
-                // Add event listener to checkboxes
-                $('#table_kompetensi').on('change', '.delete-checkbox', function() {
-                    const kompetensiId = $(this).data('kompetensi-id');
-                    if ($(this).is(':checked')) {
-                        selectedKompetensi.add(kompetensiId);
-                    } else {
-                        selectedKompetensi.delete(kompetensiId);
-                    }
+                    // Add event listener to checkboxes
+                    $('#table_kompetensi').on('change', '.delete-checkbox', function() {
+                        const kompetensiId = $(this).data('kompetensi-id');
+                        if ($(this).is(':checked')) {
+                            selectedKompetensi.add(kompetensiId);
+                        } else {
+                            selectedKompetensi.delete(kompetensiId);
+                        }
 
-                    // Find the nearest parent card-tools within table_kompetensi
-                    const cardTools = $('#table_kompetensi').closest('.card').find('.card-tools');
+                        // Find the nearest parent card-tools within table_kompetensi
+                        const cardTools = $('#table_kompetensi').closest('.card').find('.card-tools');
 
-                    // Show or hide the "Hapus" button based on selection
-                    if (selectedKompetensi.size > 0) {
-                        if (!cardTools.find('#delete-batch-btn').length) {
-                            cardTools.append(`
+                        // Show or hide the "Hapus" button based on selection
+                        if (selectedKompetensi.size > 0) {
+                            if (!cardTools.find('#delete-batch-btn').length) {
+                                cardTools.append(`
                 <button id="delete-batch-btn" class="btn btn-sm btn-danger mt-1">Hapus</button>
             `);
+                            }
+                        } else {
+                            cardTools.find('#delete-batch-btn').remove();
                         }
-                    } else {
-                        cardTools.find('#delete-batch-btn').remove();
-                    }
-                });
+                    });
 
-                // Handle batch delete button click
-                $(document).on('click', '#delete-batch-btn', function() {
+                    // Handle batch delete button click
+                    $(document).on('click', '#delete-batch-btn', function() {
+                        Swal.fire({
+                            title: 'Hapus Kompetensi?',
+                            text: "Apakah Anda yakin ingin menghapus kompetensi yang dipilih?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Ya, Hapus',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const url =
+                                    `${baseUrl}/kegiatan/${kegiatanId}/delete_kompetensi_kegiatan`;
+                                $.ajax({
+                                    url: url, // Endpoint for batch delete
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify({
+                                        kompetensiIds: Array.from(
+                                            selectedKompetensi)
+                                    }),
+                                    success: function(response) {
+                                        if (response.status) {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil!',
+                                                text: response.message,
+                                                showConfirmButton: false,
+                                                timer: 3000
+                                            });
+                                            location
+                                                .reload(); // Reload the table after success
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal!',
+                                                text: response.message,
+                                                showConfirmButton: true,
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    });
+                @endif
+            @endif
+
+            // TODO
+            @if (session('role') != 'dosen' || $isPic)
+                $('.delete-lampiran').on('click', function() {
+                    const lampiranId = $(this).data('id'); // Get the Lampiran ID
+                    const deleteUrl =
+                        `${baseUrl}/kegiatan/${lampiranId}/lampiran_delete_ajax`; // Construct the delete URL
+
                     Swal.fire({
-                        title: 'Hapus Kompetensi?',
-                        text: "Apakah Anda yakin ingin menghapus kompetensi yang dipilih?",
+                        title: 'Hapus Lampiran?',
+                        text: "Apakah Anda yakin ingin menghapus lampiran ini?",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
@@ -382,15 +463,9 @@
                         cancelButtonText: 'Batal'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const url =
-                                `${baseUrl}/kegiatan/${kegiatanId}/delete_kompetensi_kegiatan`;
                             $.ajax({
-                                url: url, // Endpoint for batch delete
-                                type: 'POST',
-                                contentType: 'application/json',
-                                data: JSON.stringify({
-                                    kompetensiIds: Array.from(selectedKompetensi)
-                                }),
+                                url: deleteUrl, // Use the constructed DELETE URL
+                                type: 'DELETE', // Use DELETE method
                                 success: function(response) {
                                     if (response.status) {
                                         Swal.fire({
@@ -401,7 +476,7 @@
                                             timer: 3000
                                         });
                                         location
-                                            .reload(); // Reload the table after success
+                                            .reload(); // Reload the page to update the list
                                     } else {
                                         Swal.fire({
                                             icon: 'error',
@@ -410,64 +485,20 @@
                                             showConfirmButton: true,
                                         });
                                     }
+                                },
+                                error: function(xhr, status, error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'Terjadi kesalahan saat menghapus lampiran.',
+                                        showConfirmButton: true,
+                                    });
                                 }
                             });
                         }
                     });
                 });
             @endif
-
-            $('.delete-lampiran').on('click', function() {
-                const lampiranId = $(this).data('id'); // Get the Lampiran ID
-                const deleteUrl =
-                    `${baseUrl}/kegiatan/${lampiranId}/lampiran_delete_ajax`; // Construct the delete URL
-
-                Swal.fire({
-                    title: 'Hapus Lampiran?',
-                    text: "Apakah Anda yakin ingin menghapus lampiran ini?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, Hapus',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: deleteUrl, // Use the constructed DELETE URL
-                            type: 'DELETE', // Use DELETE method
-                            success: function(response) {
-                                if (response.status) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil!',
-                                        text: response.message,
-                                        showConfirmButton: false,
-                                        timer: 3000
-                                    });
-                                    location
-                                        .reload(); // Reload the page to update the list
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Gagal!',
-                                        text: response.message,
-                                        showConfirmButton: true,
-                                    });
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'Terjadi kesalahan saat menghapus lampiran.',
-                                    showConfirmButton: true,
-                                });
-                            }
-                        });
-                    }
-                });
-            });
 
             // Dropdown filter for Tipe Kegiatan
             $('#filterTipeAnggota').on('change', function() {

@@ -16,6 +16,20 @@ class KegiatanController extends Controller
         $this->apiUrl = env('API_BASE_URL', "ini harus url");
     }
 
+    private function check_jabatan_in_kegiatan(array $users)
+    {
+        // Find the user with the given userId
+        foreach ($users as $user) {
+            if (isset($user['userId']) && $user['userId'] === session('user_id')) {
+                if ($user['isPic']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function index()
     {
         $breadcrumb = (object) [
@@ -37,7 +51,12 @@ class KegiatanController extends Controller
 
     public function list()
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
+        if (session('role') == 'dosen') {
+            $response = Http::withAuthToken()->withQueryParameters(['uid_user' => session('user_id')])->get("{$this->apiUrl}/api/kegiatan");
+        } else {
+            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
+        }
+
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
@@ -65,13 +84,17 @@ class KegiatanController extends Controller
             'list' => ['Kegiatan', 'Detail Kegiatan']
         ];
 
+
+
         if ($response->successful()) {
+            $isPic = $this->check_jabatan_in_kegiatan($response->json('data.users'));
             $data = $response->json('data');
 
             return view('kegiatan.detail', [
                 'breadcrumb' => $breadcrumb,
                 'activeMenu' => 'apalah',
                 'jabatan' => $responseJabatan->json('data'),
+                'isPic' => $isPic,
                 'data' => $data
             ]);
         }

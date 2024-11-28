@@ -47,7 +47,7 @@
                         <ul id="existing-attachments" class="list-group mt-2">
                             @foreach ($current['attachments'] as $attachment)
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $attachment['nama'] }}
+                                    <a href="{{$attachment['url']}}" target="_blank">{{ $attachment['nama'] }}</a>
                                     <button type="button" class="btn btn-sm btn-danger remove-attachment"
                                         data-progress-id="{{ $current['progressId'] }}"
                                         data-attachment-id="{{ $attachment['attachmentId'] }}">

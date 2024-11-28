@@ -7,12 +7,14 @@
                 {{ $data['namaAgenda'] }}
             </h3>
             <div class="card-tools">
-                <button
-                    onclick="modalAction('{{ url('kegiatan/' . $data['agendaId'] . '/agenda_edit_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['progress', 'users']))))) }}')"
-                    class="btn btn-sm btn-warning mt-1">Edit</button>
-                <button
-                    onclick="modalAction('{{ url('kegiatan/' . $data['agendaId'] . '/agenda_delete_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['progress', 'users']))))) }}')"
-                    class="btn btn-sm btn-danger mt-1">Hapus</button>
+                @if (session('role') != 'dosen' || (isset($data['wasMePic']) && $data['wasMePic']))
+                    <button
+                        onclick="modalAction('{{ url('kegiatan/' . $data['agendaId'] . '/agenda_edit_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['progress', 'users']))))) }}')"
+                        class="btn btn-sm btn-warning mt-1">Edit</button>
+                    <button
+                        onclick="modalAction('{{ url('kegiatan/' . $data['agendaId'] . '/agenda_delete_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['progress', 'users']))))) }}')"
+                        class="btn btn-sm btn-danger mt-1">Hapus</button>
+                @endif
             </div>
 
         </div>
@@ -38,9 +40,11 @@
         <div class="card-header">
             <h3 class="card-title">Dosen yang ditugaskan</h3>
             <div class="card-tools">
-                <button
-                    onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/agenda_anggota_create_ajax?uid_agenda=' . $data['agendaId']) }}')"
-                    class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
+                @if (session('role') != 'dosen' || (isset($data['wasMePic']) && $data['wasMePic']))
+                    <button
+                        onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/agenda_anggota_create_ajax?uid_agenda=' . $data['agendaId']) }}')"
+                        class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -76,7 +80,9 @@
                         <th class="text-center">Nomor</th>
                         <th class="text-center">Nama</th>
                         <th class="text-center">Email</th>
-                        <th class="text-center">Aksi</th>
+                        @if (session('role') != 'dosen' || (isset($data['wasMePic']) && $data['wasMePic']))
+                            <th class="text-center">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -146,11 +152,11 @@
 
         var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         $(document).ready(function() {
             // Initialize DataTables with dynamic data
@@ -174,14 +180,16 @@
                         data: 'email',
                         className: 'text-center'
                     }, // Email
-                    {
-                        data: 'userKegiatanId',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            return `
+                    @if (session('role') != 'dosen' || (isset($data['wasMePic']) && $data['wasMePic']))
+                        {
+                            data: 'userKegiatanId',
+                            className: 'text-center',
+                            render: function(data, type, row) {
+                                return `
                         <button class="btn btn-sm btn-danger" onclick="modalAction('${baseUrl}/kegiatan/${agendaId}/agenda_anggota_delete_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Hapus</button>`;
-                        },
-                    }, // Aksi
+                            },
+                        }, // Aksi
+                    @endif
                 ],
                 paging: true, // Enable pagination
                 pageLength: 10, // Items per page

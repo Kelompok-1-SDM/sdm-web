@@ -133,8 +133,8 @@
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
     <script>
         function modalAction(url = '') {
-            $('#myModal1').load(url, function() {
-                $('#myModal1').modal('show');
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
             });
         }
 
