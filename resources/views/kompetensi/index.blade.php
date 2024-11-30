@@ -4,9 +4,12 @@
     <div class="card card-outline card-primary">
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
-            <div class="card-tools">
-                <button onclick="modalAction('{{ url('kompetensi/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
-            </div>
+            @if (session('role') != 'dosen')
+                <div class="card-tools">
+                    <button onclick="modalAction('{{ url('kompetensi/create_ajax') }}')"
+                        class="btn btn-sm btn-success mt-1">Tambah</button>
+                </div>
+            @endif
         </div>
         <div class="card-body">
             {{-- Tampilkan Notifikasi Sukses atau Error --}}
@@ -59,18 +62,18 @@
     {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         // DataTables Server-Side
         var dataKompetensi;
         $(document).ready(function() {
             dataKompetensi = $('#table_kompetensi').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     url: "{{ url('kompetensi/list') }}",
                     type: "POST",

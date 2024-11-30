@@ -5,11 +5,16 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/admin/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Admin</button>
-                <a href="{{ url('/admin/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
-                    Export Admin (Excel)</a>
-                <button onclick="modalAction('{{ url('admin/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                @if (session('role') == 'admin')
+                    <button onclick="modalAction('{{ url('/' . $userType . '/import') }}')"
+                        class="btn btn-sm btn-info mt-1">Import
+                        {{ $userType }}</button>
+                    <a href="{{ url('/' . $userType . '/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i
+                            class="fa fa-file-excel"></i>
+                        Export {{ $userType }} (Excel)</a>
+                    <button onclick="modalAction('{{ url('' . $userType . '/create_ajax') }}')"
+                        class="btn btn-sm btn-success mt-1">Tambah</button>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -39,14 +44,13 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_admin">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_user">
                 <thead>
                     <tr>
                         <th>Nomor</th>
                         <th>NIP</th>
                         <th>Nama</th>
                         <th>Email</th>
-                        <th>Image Profile</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -66,20 +70,20 @@
     {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         // DataTables Server-Side
-        var dataAdmin;
+        var dataUser;
         $(document).ready(function() {
-            dataAdmin = $('#table_admin').DataTable({
+            dataUser = $('#table_user').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
-                    url: "{{ url('admin/list') }}",
+                    url: "{{ url($userType . '/list') }}",
                     type: "POST",
                 },
                 columns: [{
@@ -105,20 +109,6 @@
                         className: "text-center",
                         orderable: true,
                         searchable: true
-                    },
-                    {
-                        data: "profileImage",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
-                        render: function(data, type, row) {
-                            if (data) {
-                                return "<img class='direct-chat-img' style='float: none;' src='" +
-                                    data +
-                                    "' alt='message admin image'>";
-                            }
-                            return data;
-                        }
                     },
                     {
                         data: "aksi",

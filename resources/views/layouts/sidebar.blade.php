@@ -19,25 +19,32 @@
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li class="nav-header">Data Pengguna</li>
-            <li class="nav-item">
-                <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }} ">
-                    <i class="nav-icon fas fa-user"></i>
-                    <p>Dosen</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url('/manajemen') }}" class="nav-link {{ $activeMenu == 'manajemen' ? 'active' : '' }}">
-                    <i class="nav-icon far fa-user"></i>
-                    <p>Manajemen</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ url('/admin') }}" class="nav-link {{ $activeMenu == 'admin' ? 'active' : '' }}">
-                    <i class="nav-icon far fa-user"></i>
-                    <p>Admin</p>
-                </a>
-            </li>
+            @if (session('role') != 'dosen')
+                <li class="nav-header">Data Pengguna</li>
+                <li class="nav-item">
+                    <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }} ">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>Dosen</p>
+                    </a>
+                </li>
+                @if (session('role') == 'admin')
+                    <li class="nav-item">
+                        <a href="{{ url('/manajemen') }}"
+                            class="nav-link {{ $activeMenu == 'manajemen' ? 'active' : '' }}">
+                            <i class="nav-icon far fa-user"></i>
+                            <p>Manajemen</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/admin') }}" class="nav-link {{ $activeMenu == 'admin' ? 'active' : '' }}">
+                            <i class="nav-icon far fa-user"></i>
+                            <p>Admin</p>
+                        </a>
+                    </li>
+                @endif
+            @endif
+
+
             <li class="nav-header">Data Kegiatan</li>
             <li class="nav-item">
                 <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }} ">
@@ -46,11 +53,19 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/kompetensi') }}" class="nav-link {{ $activeMenu == 'kompetensi' ? 'active' : '' }} ">
+                <a href="{{ url('/kompetensi') }}"
+                    class="nav-link {{ $activeMenu == 'kompetensi' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-graduation-cap"></i>
                     <p>Kompetensi</p>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ url('/jabatan') }}" class="nav-link {{ $activeMenu == 'jabatan' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-bars"></i>
+                    <p>Jabatan</p>
+                </a>
+            </li>
+            <li class="nav-header"></li>
             <li class="nav-item">
                 <a href="{{ url('/logout') }}" class="nav-link {{ $activeMenu == 'logout' ? 'active' : '' }} ">
                     <i class="nav-icon fas fa-door-open"></i>

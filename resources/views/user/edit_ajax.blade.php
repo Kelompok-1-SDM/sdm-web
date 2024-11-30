@@ -1,4 +1,8 @@
-@empty($dosen)
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+@empty($admin)
+=======
+@empty($user)
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,38 +15,65 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/dosen') }}" class="btn btn-warning">Kembali</a>
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+                <a href="{{ url('/admin') }}" class="btn btn-warning">Kembali</a>
+=======
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/dosen/' . $dosen['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+    <form action="{{ url('/admin/' . $admin['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
+=======
+    <form action="{{ url('/' . $userType . '/' . $user['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
         @csrf
         @method('POST')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Dosen</h5>
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Admin</h5>
+=======
+                    <h5 class="modal-title" id="exampleModalLabel">Edit data {{ $userType }}</h5>
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="role" value="dosen">
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+                    <input type="hidden" name="role" value="admin">
                     <div class="form-group">
                         <label>Nip</label>
-                        <input value="{{ $dosen['nip'] }}" type="number" name="nip" id="nip"
+                        <input value="{{ $admin['nip'] }}" type="number" name="nip" id="nip"
+=======
+                    <input type="hidden" name="role" value="{{ $userType }}">
+                    <div class="form-group">
+                        <label>Nip</label>
+                        <input value="{{ $user['nip'] }}" type="number" name="nip" id="nip"
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
                             class="form-control">
                         <small id="error-nip" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Nama</label>
-                        <input value="{{ $dosen['nama'] }}" type="text" name="nama" id="nama"
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+                        <input value="{{ $admin['nama'] }}" type="text" name="nama" id="nama"
+=======
+                        <input value="{{ $user['nama'] }}" type="text" name="nama" id="nama"
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
                             class="form-control">
                         <small id="error-nama" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input value="{{ $dosen['email'] }}" type="email" name="email" id="email"
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+                        <input value="{{ $admin['email'] }}" type="email" name="email" id="email"
+=======
+                        <input value="{{ $user['email'] }}" type="email" name="email" id="email"
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
                             class="form-control">
                         <small id="error-email" class="error-text form-text text-danger"></small>
                     </div>
@@ -69,6 +100,22 @@
         </div>
     </form>
     <script>
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+=======
+        function prepareChangedData(form, oldData) {
+            const formData = new FormData(form);
+            const changedData = {};
+
+            for (let [key, value] of formData.entries()) {
+                if (value !== oldData[key]) {
+                    changedData[key] = value;
+                }
+            }
+
+            return changedData;
+        }
+
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
@@ -95,8 +142,26 @@
                     }
                 },
                 submitHandler: function(form) {
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
                     var formData = new FormData(
                         form); // Jadikan form ke FormData untuk menghandle file 
+=======
+                    // Prepare payload with only changed fields
+                    const changedData = prepareChangedData(form, @json($user));
+
+                    // Stop submission if no changes
+                    if (Object.keys(changedData).length === 0) {
+                        Swal.fire({
+                            icon: "info",
+                            title: "No Changes",
+                            text: "You haven't made any changes."
+                        });
+                        return false;
+                    }
+
+                    var formData = new FormData(
+                        form); // Jadikan form ke FormData untuk menghandle file
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
 
                     $.ajax({
                         url: form.action,
@@ -112,7 +177,11 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataDosen.ajax.reload();
+<<<<<<< HEAD:resources/views/admin/edit_ajax.blade.php
+                                dataAdmin.ajax.reload();
+=======
+                                location.reload();
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/edit_ajax.blade.php
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

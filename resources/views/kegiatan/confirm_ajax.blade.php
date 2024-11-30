@@ -1,4 +1,4 @@
-@empty($dosen)
+@empty($kegiatan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,18 +11,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/dosen') }}" class="btn btn-warning">Kembali</a>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/dosen/' . $dosen['userId'] . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/kegiatan/' . $kegiatan['kegiatanId'] . '/delete_ajax') }}" method="POST" id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Dosen</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data kegiatan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
@@ -31,27 +31,45 @@
                         <h5><i class="icon fas fa-ban"></i> Konfirmasi !!!</h5>
                         Apakah Anda ingin menghapus data seperti di bawah ini?
                     </div>
-                    <table class="table table-sm table-bordered table-striped">
+                    <table class="table table-bordered table-striped table-hover table-sm">
                         <tr>
-                            <th class="text-right col-3">NIP:</th>
-                            <td class="col-9">{{ $dosen['nip'] }}</td>
+                            <th>ID</th>
+                            <td>{{ $kegiatan['kegiatanId'] }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Nama:</th>
-                            <td class="col-9">{{ $dosen['nama'] }}</td>
+                            <th>Judul</th>
+                            <td>{{ $kegiatan['judul'] }}</td>
                         </tr>
                         <tr>
-                            <th class="text-right col-3">Email:</th>
-                            <td class="col-9">{{ $dosen['email'] }}</td>
+                            <th>Taggal Mulai</th>
+                            <td>{{ date_format(date_create($kegiatan['tanggalMulai']), 'd F Y, H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Taggal Akhir</th>
+                            <td>{{ date_format(date_create($kegiatan['tanggalAkhir']), 'd F Y, H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipe kegiatan</th>
+                            <td><small
+                                    class="badge {{ $kegiatan['tipeKegiatan'] == 'jti' ? 'badge-success' : 'badge-warning' }}">{{ $kegiatan['tipeKegiatan'] }}</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Deskripsi</th>
+                            <td>{{ $kegiatan['deskripsi'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status kegiatan</th>
+                            <td><small
+                                    class="badge {{ $kegiatan['isDone'] ? 'badge-success' : 'badge-primary' }}">{{ $kegiatan['isDone'] ? 'Selesai' : 'Belum Selesai' }}</small>
+                            </td>
                         </tr>
                     </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
-                </div>
-            </div>
-        </div>
+
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                        <button type="submit" class="btn btn-primary">Ya, Hapus</button>
+                    </div>
     </form>
     <script>
         $(document).ready(function() {
@@ -70,7 +88,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataDosen.ajax.reload();
+                                window.history.back();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

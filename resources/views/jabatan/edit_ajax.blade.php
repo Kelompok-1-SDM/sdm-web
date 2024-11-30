@@ -1,4 +1,8 @@
-@empty($admin)
+<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
+@empty($dosen)
+=======
+@empty($jabatan)
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,38 +15,47 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/admin') }}" class="btn btn-warning">Kembali</a>
+<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
+                <a href="{{ url('/dosen') }}" class="btn btn-warning">Kembali</a>
+=======
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/admin/' . $admin['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
+<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
+    <form action="{{ url('/dosen/' . $dosen['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
+=======
+    <form action="{{ url('/jabatan/' . $jabatan['jabatanId'] . '/update_ajax') }}" method="POST" id="form-edit">
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
         @csrf
         @method('POST')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Admin</h5>
+<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Dosen</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" name="role" value="admin">
+                    <input type="hidden" name="role" value="dosen">
                     <div class="form-group">
                         <label>Nip</label>
-                        <input value="{{ $admin['nip'] }}" type="number" name="nip" id="nip"
+                        <input value="{{ $dosen['nip'] }}" type="number" name="nip" id="nip"
                             class="form-control">
                         <small id="error-nip" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Nama</label>
-                        <input value="{{ $admin['nama'] }}" type="text" name="nama" id="nama"
+                        <input value="{{ $dosen['nama'] }}" type="text" name="nama" id="nama"
                             class="form-control">
                         <small id="error-nama" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input value="{{ $admin['email'] }}" type="email" name="email" id="email"
+                        <input value="{{ $dosen['email'] }}" type="email" name="email" id="email"
                             class="form-control">
                         <small id="error-email" class="error-text form-text text-danger"></small>
                     </div>
@@ -57,6 +70,30 @@
                         <input value="" type="password" name="password" id="password" class="form-control">
                         <small style="color: grey;">*optional, fill if need to be changed</small>
                         <small id="error-password" class="error-text form-text text-danger"></small>
+=======
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Jabatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nama_jabatan">Nama Jabatan</label>
+                        <input value="{{ $jabatan['namaJabatan'] }}" type="text" name="nama_jabatan" id="nama_jabatan"
+                            class="form-control">
+                        <small id="error-nama_jabatan" class="error-text form-text text-danger"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="is_pic">Tipe Role</label>
+                        <select name="is_pic" id="is_pic" class="form-control" required>
+                            <option value="">- Pilih Tipe Role -</option>
+                            <option value="true" {{ $jabatan['isPic'] == true ? 'selected' : '' }}>PIC</option>
+                            <option value="false" {{ $jabatan['isPic'] == false ? 'selected' : '' }}>Anggota
+                            </option>
+                        </select>
+                        <small id="error-is_pic" class="error-text form-text text-danger"></small>
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
                     </div>
                 </div>
 
@@ -72,6 +109,7 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
+<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
                     role: {
                         required: true
                     },
@@ -104,6 +142,18 @@
                         data: formData,
                         processData: false, // setting processData dan contentType ke false, untuk menghandle file 
                         contentType: false,
+=======
+                    namaJabatan: {
+                        minlength: 3,
+                        maxlength: 255
+                    },
+                },
+                submitHandler: function(form) {
+                    $.ajax({
+                        url: form.action,
+                        type: form.method,
+                        data: $(form).serialize(),
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
                         success: function(response) {
                             if (response.status) {
                                 $('#myModal').modal('hide');
@@ -112,7 +162,11 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataAdmin.ajax.reload();
+<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
+                                dataDosen.ajax.reload();
+=======
+                                dataJabatan.ajax.reload();
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

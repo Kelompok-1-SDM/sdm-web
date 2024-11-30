@@ -1,99 +1,81 @@
-<form action="{{ url('/dosen/store_ajax') }}" method="POST" id="form-tambah">
+<<<<<<< HEAD:resources/views/admin/import.blade.php
+<form action="{{ url('/admin/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
+=======
+<form action="{{ url('/' . $userType . '/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/import.blade.php
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data User</h5>
+<<<<<<< HEAD:resources/views/admin/import.blade.php
+                <h5 class="modal-title" id="exampleModalLabel">Import Data Admin</h5>
+=======
+                <h5 class="modal-title" id="exampleModalLabel">Import data {{ $userType }}</h5>
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/import.blade.php
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" name="role" value="dosen">
                 <div class="form-group">
-                    <label>Nip</label>
-                    <input value="" type="number" name="nip" id="nip" class="form-control" required>
-                    <small id="error-nip" class="error-text form-text text-danger"></small>
+                    <label>Download Template</label>
+                    <a href="{{ asset('contoh_file.xlsx') }}" class="btn btn-info btn-sm" download><i
+                            class="fa fa-file-excel"></i>Download</a>
+<<<<<<< HEAD:resources/views/admin/import.blade.php
+                    <small id="error-admin_id" class="error-text form-text text-danger"></small>
+=======
+                    <small id="error-user_id" class="error-text form-text text-danger"></small>
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/import.blade.php
                 </div>
                 <div class="form-group">
-                    <label>Nama</label>
-                    <input value="" type="text" name="nama" id="nama" class="form-control" required>
-                    <small id="error-nama" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input value="" type="email" name="email" id="email" class="form-control" required>
-                    <small id="error-email" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Foto Profil</label>
-                    <input type="file" name="file" id="file" class="form-control">
-                    <small style="color: grey;">*optional</small>
+                    <label>Pilih File</label>
+                    <input type="file" name="file" id="file" class="form-control" required>
                     <small id="error-file" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input value="" type="password" name="password" id="password" class="form-control" required>
-                    <small id="error-password" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn btn-primary">Upload</button>
             </div>
         </div>
     </div>
 </form>
-
 <script>
     $(document).ready(function() {
-        $("#form-tambah").validate({
+        $("#form-import").validate({
             rules: {
-                role: {
-                    required: true
-                },
-                nip: {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 24
-                },
-                nama: {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 255
-                },
-                email: {
-                    required: true,
-                    maxlength: 255
-                },
-                password: {
-                    required: true,
-                    minlength: 6,
-                    maxlength: 20
-                },
                 file: {
-                    extension: "jpg|jpeg|png|ico|bmp"
-                }
+                    required: true,
+                    extension: "xlsx"
+                },
             },
             submitHandler: function(form) {
                 var formData = new FormData(
+<<<<<<< HEAD:resources/views/admin/import.blade.php
+                form); // Jadikan form ke FormData untuk menghandle file 
+=======
                     form); // Jadikan form ke FormData untuk menghandle file 
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/import.blade.php
 
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: formData,
+                    data: formData, // Data yang dikirim berupa FormData 
                     processData: false, // setting processData dan contentType ke false, untuk menghandle file 
                     contentType: false,
                     success: function(response) {
-                        if (response.status) {
+                        if (response.status) { // jika sukses 
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataDosen.ajax.reload();
-                        } else {
+<<<<<<< HEAD:resources/views/admin/import.blade.php
+                            dataAdmin.ajax.reload(); // reload datatable 
+=======
+                            dataUser.ajax.reload(); // reload datatable 
+>>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/user/import.blade.php
+                        } else { // jika error 
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
                                 $('#error-' + prefix).text(val[0]);

@@ -1,61 +1,53 @@
-<form action="{{ url('/admin/import_ajax') }}" method="POST" id="form-import" enctype="multipart/form-data">
+<form action="{{ url('/kompetensi/store_ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Import Data Admin</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Kompetensi</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Download Template</label>
-                    <a href="{{ asset('contoh_file.xlsx') }}" class="btn btn-info btn-sm" download><i
-                            class="fa fa-file-excel"></i>Download</a>
-                    <small id="error-admin_id" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Pilih File</label>
-                    <input type="file" name="file" id="file" class="form-control" required>
-                    <small id="error-file" class="error-text form-text text-danger"></small>
+                    <label>Nama Kompetensi</label>
+                    <input value="" type="text" name="nama_kompetensi" id="nama_kompetensi" class="form-control"
+                        required>
+                    <small id="error-nama_kompetensi" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </div>
     </div>
 </form>
+
 <script>
     $(document).ready(function() {
-        $("#form-import").validate({
+        $("#form-tambah").validate({
             rules: {
-                file: {
+                nama_kompetensi: {
                     required: true,
-                    extension: "xlsx"
+                    minlength: 3,
+                    maxlength: 255
                 },
             },
             submitHandler: function(form) {
-                var formData = new FormData(
-                form); // Jadikan form ke FormData untuk menghandle file 
-
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: formData, // Data yang dikirim berupa FormData 
-                    processData: false, // setting processData dan contentType ke false, untuk menghandle file 
-                    contentType: false,
+                    data: $(form).serialize(),
                     success: function(response) {
-                        if (response.status) { // jika sukses 
+                        if (response.status) {
                             $('#myModal').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataAdmin.ajax.reload(); // reload datatable 
-                        } else { // jika error 
+                            dataKompetensi.ajax.reload();
+                        } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
                                 $('#error-' + prefix).text(val[0]);
