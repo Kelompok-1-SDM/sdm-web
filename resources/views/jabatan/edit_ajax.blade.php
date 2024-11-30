@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
-@empty($dosen)
-=======
 @empty($jabatan)
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -15,62 +11,17 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
-                <a href="{{ url('/dosen') }}" class="btn btn-warning">Kembali</a>
-=======
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
             </div>
         </div>
     </div>
 @else
-<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
-    <form action="{{ url('/dosen/' . $dosen['userId'] . '/update_ajax') }}" method="POST" id="form-edit">
-=======
     <form action="{{ url('/jabatan/' . $jabatan['jabatanId'] . '/update_ajax') }}" method="POST" id="form-edit">
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
         @csrf
         @method('POST')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Dosen</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="role" value="dosen">
-                    <div class="form-group">
-                        <label>Nip</label>
-                        <input value="{{ $dosen['nip'] }}" type="number" name="nip" id="nip"
-                            class="form-control">
-                        <small id="error-nip" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Nama</label>
-                        <input value="{{ $dosen['nama'] }}" type="text" name="nama" id="nama"
-                            class="form-control">
-                        <small id="error-nama" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input value="{{ $dosen['email'] }}" type="email" name="email" id="email"
-                            class="form-control">
-                        <small id="error-email" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Foto Profil</label>
-                        <input type="file" name="file" id="file" class="form-control">
-                        <small style="color: grey;">*optional, fill if need to be changed</small>
-                        <small id="error-file" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input value="" type="password" name="password" id="password" class="form-control">
-                        <small style="color: grey;">*optional, fill if need to be changed</small>
-                        <small id="error-password" class="error-text form-text text-danger"></small>
-=======
                     <h5 class="modal-title" id="exampleModalLabel">Tambah Data Jabatan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
@@ -93,7 +44,6 @@
                             </option>
                         </select>
                         <small id="error-is_pic" class="error-text form-text text-danger"></small>
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
                     </div>
                 </div>
 
@@ -109,40 +59,6 @@
         $(document).ready(function() {
             $("#form-edit").validate({
                 rules: {
-<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
-                    role: {
-                        required: true
-                    },
-                    nip: {
-                        minlength: 3,
-                        maxlength: 24
-                    },
-                    nama: {
-                        minlength: 3,
-                        maxlength: 255
-                    },
-                    email: {
-                        maxlength: 255
-                    },
-                    password: {
-                        minlength: 6,
-                        maxlength: 20
-                    },
-                    file: {
-                        extension: "jpg|jpeg|png|ico|bmp"
-                    }
-                },
-                submitHandler: function(form) {
-                    var formData = new FormData(
-                        form); // Jadikan form ke FormData untuk menghandle file 
-
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: formData,
-                        processData: false, // setting processData dan contentType ke false, untuk menghandle file 
-                        contentType: false,
-=======
                     namaJabatan: {
                         minlength: 3,
                         maxlength: 255
@@ -153,7 +69,6 @@
                         url: form.action,
                         type: form.method,
                         data: $(form).serialize(),
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
                         success: function(response) {
                             if (response.status) {
                                 $('#myModal').modal('hide');
@@ -162,11 +77,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-<<<<<<< HEAD:resources/views/dosen/edit_ajax.blade.php
-                                dataDosen.ajax.reload();
-=======
                                 dataJabatan.ajax.reload();
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/edit_ajax.blade.php
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

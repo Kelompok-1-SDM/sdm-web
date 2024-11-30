@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/views/dosen/create_ajax.blade.php
-<form action="{{ url('/dosen/store_ajax') }}" method="POST" id="form-tambah">
-=======
 <form action="{{ url('/jabatan/store_ajax') }}" method="POST" id="form-tambah">
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/create_ajax.blade.php
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -11,11 +7,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Data User</h5>
 =======
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Data Jabatan</h5>
->>>>>>> 24444c93d92e7571389c3cf7db92cf1f91e5f3c5:resources/views/jabatan/create_ajax.blade.php
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
             </div>
-            <div class="modal-body">
 <<<<<<< HEAD:resources/views/dosen/create_ajax.blade.php
                 <input type="hidden" name="role" value="dosen">
                 <div class="form-group">
