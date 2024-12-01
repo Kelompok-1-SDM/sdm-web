@@ -65,6 +65,7 @@ class KegiatanController extends Controller
             'list' => ['Kegiatan', 'Detail Kegiatan']
         ];
 
+        // dd($response->json());
         if ($response->successful()) {
             $data = $response->json('data');
 
