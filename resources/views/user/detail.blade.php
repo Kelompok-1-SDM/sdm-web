@@ -7,12 +7,15 @@
                 Detail data {{ $userType }}
             </h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('' . $userType . '/' . $user['userId'] . '/edit_ajax') }}')"
-                    class="btn btn-sm btn-warning mt-1">Edit</button>
-                @if (session('user_id') != $user['userId'])
-                    <button onclick="modalAction('{{ url('' . $userType . '/' . $user['userId'] . '/delete_ajax') }}')"
-                        class="btn btn-sm btn-danger mt-1">Hapus</button>
+                @if (session('role') == 'admin')
+                    <button onclick="modalAction('{{ url('' . $userType . '/' . $user['userId'] . '/edit_ajax') }}')"
+                        class="btn btn-sm btn-warning mt-1">Edit</button>
+                    @if (session('user_id') != $user['userId'])
+                        <button onclick="modalAction('{{ url('' . $userType . '/' . $user['userId'] . '/delete_ajax') }}')"
+                            class="btn btn-sm btn-danger mt-1">Hapus</button>
+                    @endif
                 @endif
+
 
             </div>
         </div>
@@ -116,9 +119,12 @@
             <div class="card-header">
                 <h3 class="card-title">Kompetensi yang dimiliki</h3>
                 <div class="card-tools">
-                    <button
-                        onclick="modalAction('{{ url('' . $userType . '/' . $user['userId'] . '/tambah_kompetensi_ajax') }}')"
-                        class="btn btn-sm btn-primary mt-1">Tambah Kompetensi</button>
+                    @if (session('role') == 'admin')
+                        <button
+                            onclick="modalAction('{{ url('' . $userType . '/' . $user['userId'] . '/tambah_kompetensi_ajax') }}')"
+                            class="btn btn-sm btn-primary mt-1">Tambah Kompetensi</button>
+                    @endif
+
                 </div>
             </div>
             <div class="card-body">
@@ -153,7 +159,9 @@
                         <tr>
                             <th class="text-center">Nomor</th>
                             <th class="text-center">Nama Kompetensi</th>
-                            <th class="text-center">Pilih</th>
+                            @if (session('role') == 'admin')
+                                <th class="text-center">Pilih</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -179,11 +187,11 @@
         var kompetensiData = @json($user['kompetensi']);
         var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         $(document).ready(function() {
             // Initialize DataTables with dynamic data
@@ -282,15 +290,17 @@
                             data: 'namaKompetensi',
                             className: 'text-center',
                         }, // Nama
-                        {
-                            data: 'kompetensiId',
-                            className: 'text-center',
-                            render: function(data, type, row) {
-                                return `
+                        @if (session('role') == 'admin')
+                            {
+                                data: 'kompetensiId',
+                                className: 'text-center',
+                                render: function(data, type, row) {
+                                    return `
                         <input type="checkbox" class="delete-checkbox" data-kompetensi-id="${data}" />
                     `;
-                            },
-                        } // Aksi
+                                },
+                            } // Aksi
+                        @endif
                     ],
                     paging: true, // Enable pagination
                     pageLength: 10, // Items per page

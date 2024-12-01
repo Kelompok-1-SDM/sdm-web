@@ -5,8 +5,10 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah</button>
+                @if (session('role') != 'dosen')
+                    <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
+                        class="btn btn-sm btn-success mt-1">Tambah</button>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -75,11 +77,11 @@
     {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         // DataTables Server-Side
         var dataKegiatan;

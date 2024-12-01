@@ -42,10 +42,13 @@ class JabatanController extends Controller
                 ->addColumn('aksi', function ($jabatan) {  // menambahkan kolom aksi  
                     $btn  = '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
                         '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
-                        '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
-                        '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                    if (session('role') != 'dosen') {
+                        $btn .= '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
+                            '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                        $btn .= '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
+                            '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                    }
+
 
                     return $btn;
                 })

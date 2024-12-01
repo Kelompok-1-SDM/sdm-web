@@ -16,6 +16,20 @@ class KegiatanController extends Controller
         $this->apiUrl = env('API_BASE_URL', "ini harus url");
     }
 
+    private function check_jabatan_in_kegiatan(array $users)
+    {
+        // Find the user with the given userId
+        foreach ($users as $user) {
+            if (isset($user['userId']) && $user['userId'] === session('user_id')) {
+                if ($user['isPic']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function index()
     {
         $breadcrumb = (object) [
@@ -37,7 +51,12 @@ class KegiatanController extends Controller
 
     public function list()
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
+        if (session('role') == 'dosen') {
+            $response = Http::withAuthToken()->withQueryParameters(['uid_user' => session('user_id')])->get("{$this->apiUrl}/api/kegiatan");
+        } else {
+            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
+        }
+
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
@@ -65,14 +84,17 @@ class KegiatanController extends Controller
             'list' => ['Kegiatan', 'Detail Kegiatan']
         ];
 
-        // dd($response->json());
+
+
         if ($response->successful()) {
+            $isPic = $this->check_jabatan_in_kegiatan($response->json('data.users'));
             $data = $response->json('data');
 
             return view('kegiatan.detail', [
                 'breadcrumb' => $breadcrumb,
                 'activeMenu' => 'apalah',
                 'jabatan' => $responseJabatan->json('data'),
+                'isPic' => $isPic,
                 'data' => $data
             ]);
         }
@@ -672,7 +694,7 @@ class KegiatanController extends Controller
             // Filter only existing keys from the request to include in the payload
             $allowedKeys = ['nama_agenda', 'jadwal_agenda', 'deskripsi_agenda', 'is_done', 'list_uid_user_kegiatan'];
             $formattedData = $request->only($allowedKeys);
-            
+
 
             // Send the formatted data to the API
             $response = Http::withAuthToken()
@@ -716,12 +738,12 @@ class KegiatanController extends Controller
             if ($response->successful()) {
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Lampiran berhasil dihapus',
+                    'message' => 'Agenda berhasil dihapus',
                 ]);
             } else {
                 return response()->json([
                     'status'  => false,
-                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus lampiran.'),
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus agenda.'),
                 ]);
             }
         }
@@ -773,8 +795,188 @@ class KegiatanController extends Controller
         return redirect('/');
     }
 
+    public function agenda_progress_show_ajax(Request $request)
+    {
+        $progressData = json_decode($request->query('data'), true);
+        return view('kegiatan.agenda.progress.show_ajax', ['progress' => $progressData]);
+    }
+
     public function agenda_progress_create_ajax(string $id)
     {
         return view('kegiatan.agenda.progress.create_ajax', ['id' => $id]);
+    }
+
+    public function agenda_progress_store_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Validation rules
+            $rules = [
+                'deskripsi' => 'required|string', // Rename to deskripsi_progress for API payload
+                'file' => 'nullable|array', // Accept multiple files as an array
+                'file.*' => 'nullable|file|max:2048', // Validate each file (max 2MB)
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $payload = [
+                'deskripsi_progress' => $request->deskripsi, // Map deskripsi to deskripsi_progress
+            ];
+
+            $client = Http::withAuthToken(); // Initialize client with token
+            $client->withQueryParameters(['uid_agenda' => $id]);
+
+            if ($request->hasFile('file')) {
+                foreach ($request->file('file') as $file) {
+                    $client->attach('files', file_get_contents($file), $file->getClientOriginalName());
+                }
+            }
+
+            // dd($payload);
+
+            // Perform the POST request with payload and files
+            $response = $client->post("{$this->apiUrl}/api/agenda/progress", $payload);
+
+            // dd($response->json());
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => $response->json('Progress berhasil disimpan'),
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan progress.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_progress_edit_ajax(Request $request, string $id)
+    {
+        $progressData = json_decode($request->query('data'), true);
+        return view('kegiatan.agenda.progress.update_ajax', ['current' => $progressData, 'id' => $id]);
+    }
+
+    public function agenda_progress_update_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Validation rules
+            $rules = [
+                'deskripsi' => 'nullable|string', // Rename to deskripsi_progress for API payload
+                'file' => 'nullable|array', // Accept multiple files as an array
+                'file.*' => 'nullable|file|max:2048', // Validate each file (max 2MB)
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $payload = [
+                'deskripsi_progress' => $request->deskripsi, // Map deskripsi to deskripsi_progress
+            ];
+
+            $client = Http::withAuthToken(); // Initialize client with token
+            $client->withQueryParameters([
+                'uid_agenda' => $request->uid_agenda,
+                'uid' => $id
+            ]);
+
+            if ($request->hasFile('file')) {
+                foreach ($request->file('file') as $file) {
+                    $client->attach('files', file_get_contents($file), $file->getClientOriginalName());
+                }
+            }
+
+
+            // Perform the POST request with payload and files
+            $response = $client->put("{$this->apiUrl}/api/agenda/progress", $payload);
+
+            // dd($response->json());
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => $response->json('Progress berhasil disimpan'),
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan progress.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_progress_delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id,
+                ])
+                ->delete("{$this->apiUrl}/api/agenda/progress");
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Progress berhasil dihapus dari agenda',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus progress dari agenda.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function agenda_progress_attachment_delete_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // dd($id . " " . $request->uid_attachment);
+            // Send the formatted data to the API
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id,
+                    'uid_attachment' => $request->uid_attachment
+                ])
+                ->delete("{$this->apiUrl}/api/agenda/progress-attachment");
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Attachment berhasil dihapus dari progress',
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => $response->json('message', 'Terjadi kesalahan saat mengahapus attachment dari progress.'),
+                ]);
+            }
+        }
+
+        return redirect('/');
     }
 }

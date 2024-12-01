@@ -1,10 +1,7 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ManajemenController;
-use App\Http\Controllers\DosenController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KompetensiController;
@@ -94,7 +91,13 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::get('/{id}/agenda_anggota_delete_ajax', [KegiatanController::class, 'agenda_anggota_confirm_ajax']);
         Route::delete('/{id}/agenda_anggota_delete_ajax', [KegiatanController::class, 'agenda_anggota_delete_ajax']);
 
+        Route::get('/agenda_progress_show_ajax', [KegiatanController::class, 'agenda_progress_show_ajax']);
         Route::get('/{id}/agenda_progress_create_ajax', [KegiatanController::class, 'agenda_progress_create_ajax']);
+        Route::post('/{id}/progress_store_ajax', [KegiatanController::class, 'agenda_progress_store_ajax']);
+        Route::get('/{id}/agenda_progress_edit_ajax', [KegiatanController::class, 'agenda_progress_edit_ajax']);
+        Route::post('/{id}/agenda_progress_update_ajax', [KegiatanController::class, 'agenda_progress_update_ajax']);
+        Route::delete('/{id}/agenda_progress_delete_ajax', [KegiatanController::class, 'agenda_progress_delete_ajax']);
+        Route::delete('/{id}/agenda_progress_attachment_delete_ajax', [KegiatanController::class, 'agenda_progress_attachment_delete_ajax']);
     });
 
     Route::group(['prefix' => 'kompetensi'], function () {
