@@ -21,7 +21,12 @@ class DashboardController extends Controller
             'title' => 'Dashboard Admin',
             'list' => ['Home', 'Dashboard']
         ];
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user/homepage-web");
+        if (session('role') != 'dosen') {
+            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user/homepage-web");
+        } else {
+            $response = Http::withAuthToken()->withQueryParameters(['uid' => session('user_id')])->get("{$this->apiUrl}/api/user/statistic");
+        }
+
         $data = $response->json('data');
 
         $page = (object) [

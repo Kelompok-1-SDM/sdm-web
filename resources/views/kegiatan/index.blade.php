@@ -5,7 +5,10 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah</button>
+                @if (session('role') != 'dosen')
+                    <button onclick="modalAction('{{ url('kegiatan/create_ajax') }}')"
+                        class="btn btn-sm btn-success mt-1">Tambah</button>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -34,16 +37,27 @@
                 </script>
             @endif
 
+            <div class="row mb-2">
+                <div class="col-md-3">
+                    <label for="filterTipeKegiatan">Filter Tipe Kegiatan:</label>
+                    <select id="filterTipeKegiatan" class="form-control">
+                        <option value="">Semua</option>
+                        <option value="jti">JTI</option>
+                        <option value="non-jti">Non-JTI</option>
+                    </select>
+                </div>
+            </div>
+
             {{-- Tabel Data --}}
             <table class="table table-bordered table-striped table-hover table-sm" id="table_kegiatan">
                 <thead>
                     <tr>
                         <th>Nomor</th>
                         <th>Judul kegiatan</th>
-                        <th>Tanggal</th>
                         <th>Tipe kegiatan</th>
+                        <th>Tanggal Mulai</th>
+                        <th>Status</th>
                         <th>Lokasi</th>
-                        <th>Deskripsi</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -63,78 +77,100 @@
     {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         // DataTables Server-Side
         var dataKegiatan;
         $(document).ready(function() {
-            dataKegiatan = $('#table_kegiatan').DataTable({
+            var dataKegiatan = $('#table_kegiatan').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false, // Disable server-side processing
                 ajax: {
                     url: "{{ url('kegiatan/list') }}",
                     type: "POST",
                 },
                 columns: [{
                         data: "DT_RowIndex",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
+                        className: "text-center"
                     },
                     {
-                        data: "judulKegiatan",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
+                        data: "judul",
+                        width: "20%",
+                        className: "text-center"
                     },
-                    {
-                        data: "tanggal",
-                        className: "text-center",
-                        orderable: true,
-                        width: "10%",
-                        searchable: true,
-                        render: function(data, type, row) {
-                            if (data) {
-                                var date = new Date(data);
-                                var year = date.getFullYear();
-                                var month = ("0" + (date.getMonth() + 1)).slice(-
-                                    2); // Add leading zero
-                                var day = ("0" + date.getDate()).slice(-2); // Add leading zero
-                                return year + "-" + month + "-" + day; // Format as YYYY-MM-DD
-                            }
-                            return data; // Return original value if no data
-                        }
-                    },
+
                     {
                         data: "tipeKegiatan",
                         className: "text-center",
-                        orderable: true,
-                        searchable: true
+                        render: function(data, type, row) {
+                            return `<small class='badge ${data === 'jti' ? 'badge-success' : 'badge-warning'}'>${data}</small>`;
+                        },
+                    },
+                    {
+                        data: "tanggalMulai",
+                        className: "text-center",
+                        render: function(data, type, row) {
+                            // Parse the ISO 8601 string into a Date object
+                            var date = new Date(data);
+
+                            // Format the date part: "d MMM yyyy"
+                            var day = date.getDate().toString().padStart(2,
+                                '0'); // Ensure two digits for day
+                            var month = date.toLocaleString('default', {
+                                month: 'short'
+                            }); // Abbreviated month
+                            var year = date.getFullYear();
+
+                            // Format the time part: "H:m"
+                            var hours = date.getHours().toString().padStart(2,
+                                '0'); // Ensure two digits for hours
+                            var minutes = date.getMinutes().toString().padStart(2,
+                                '0'); // Ensure two digits for minutes
+
+                            // Return the formatted date and time as "d MMM yyyy, H:m"
+                            return day + ' ' + month + ' ' + year + ', ' + hours + ':' + minutes;
+                        },
+                    },
+                    {
+                        data: "isDone",
+                        className: "text-center",
+                        render: function(data, type, row) {
+                            return `<small class='badge ${data ? 'badge-success' : 'badge-warning'}'>${data ? 'Selesai' : 'Belum Selesai'}</small>`;
+                        },
                     },
                     {
                         data: "lokasi",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "deskripsi",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
+                        className: "text-center"
                     },
                     {
                         data: "aksi",
-                        className: "text-center",
-                        orderable: false,
-                        width: "5%",
-                        searchable: false
-                    }
-                ]
+                        className: "text-center"
+                    },
+                ],
+            });
+
+            // Dropdown filter for Tipe Kegiatan
+            $('#filterTipeKegiatan').on('change', function() {
+                var filterValue = $(this).val(); // Get selected filter value
+
+                // Clear all custom filters
+                $.fn.dataTable.ext.search = [];
+
+                if (filterValue !== "") {
+                    // Add a custom filter for the selected value
+                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                        var tipeKegiatan = data[2]
+                            .trim(); // Get raw column data (trim to avoid extra spaces)
+                        return tipeKegiatan === filterValue; // Show rows matching the filter
+                    });
+                }
+
+                // Redraw the table to apply filters
+                dataKegiatan.draw();
             });
         });
     </script>

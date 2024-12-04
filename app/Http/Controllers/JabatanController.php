@@ -7,48 +7,48 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-class KompetensiController extends Controller
+class JabatanController extends Controller
 {
     protected $apiUrl;
 
     public function __construct()
     {
-        $this->apiUrl = env('API_BASE_URL', "https://restapi-sdm.lleans.dev");
+        $this->apiUrl = env('API_BASE_URL', "ini harus url");
     }
 
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Kompetensi',
-            'list' => ['Data Kegiatan', 'Kompetensi']
+            'title' => 'Daftar Jabatan',
+            'list' => ['Data Kegiatan', 'Jabatan']
         ];
         $page = (object) [
-            'title' => 'Daftar kompetensi yang terdaftar dalam sistem',
+            'title' => 'Daftar jabatan yang terdaftar dalam sistem',
         ];
-        $activeMenu = 'kompetensi'; // set menu yang sedang aktif
+        $activeMenu = 'jabatan'; // set menu yang sedang aktif
         // Anda dapat menambahkan logika di sini
-        return view('kompetensi.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
+        return view('jabatan.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
-    public function list(Request $request)
+    public function list()
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi");
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan");
 
         // dd($response->json('data'));
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
                 ->addIndexColumn()  // menambahkan kolom index / no urut (default name kolom: DT_RowIndex)  
-                ->addColumn('aksi', function ($kompetensi) {  // menambahkan kolom aksi  
-                    $btn  = '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi['kompetensiId'] .
+                ->addColumn('aksi', function ($jabatan) {  // menambahkan kolom aksi  
+                    $btn  = '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
                         '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                     if (session('role') != 'dosen') {
-                        $btn .= '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi['kompetensiId'] .
-                        '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/kompetensi/' . $kompetensi['kompetensiId'] .
-                        '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+                        $btn .= '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
+                            '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                        $btn .= '<button onclick="modalAction(\'' . url('/jabatan/' . $jabatan['jabatanId'] .
+                            '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
                     }
-                    
+
 
                     return $btn;
                 })
@@ -59,7 +59,7 @@ class KompetensiController extends Controller
 
     public function create_ajax()
     {
-        return view('kompetensi.create_ajax');
+        return view('jabatan.create_ajax');
     }
 
     public function store_ajax(Request $request)
@@ -67,7 +67,8 @@ class KompetensiController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
 
             $rules = [
-                'nama_kompetensi' => 'required',
+                'nama_jabatan' => 'required',
+                'is_pic' => 'required'
             ];
 
             // Validate the request
@@ -81,11 +82,11 @@ class KompetensiController extends Controller
                 ]);
             }
 
-            $response = Http::withAuthToken()->post("{$this->apiUrl}/api/kompetensi", $request->all());
+            $response = Http::withAuthToken()->post("{$this->apiUrl}/api/jabatan", $request->all());
             if ($response->successful()) {
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data kompetensi berhasil disimpan',
+                    'message' => 'Data jabatan berhasil disimpan',
                 ]);
             } else {
                 return response()->json([
@@ -100,14 +101,14 @@ class KompetensiController extends Controller
 
     public function confirm_ajax(string $id)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi", [
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan", [
             'uid' => $id
         ]);
 
         if ($response->successful()) {
-            return view('kompetensi.confirm_ajax', ['kompetensi' => $response->json('data')]);
+            return view('jabatan.confirm_ajax', ['jabatan' => $response->json('data')]);
         } else {
-            return view('kompetensi.confirm_ajax', ['kompetensi' => null]);
+            return view('jabatan.confirm_ajax', ['jabatan' => null]);
         }
     }
 
@@ -118,7 +119,7 @@ class KompetensiController extends Controller
                 ->withQueryParameters([
                     'uid' => $id
                 ])
-                ->delete("{$this->apiUrl}/api/kompetensi");
+                ->delete("{$this->apiUrl}/api/jabatan");
 
             if ($response->successful()) {
                 return response()->json([
@@ -137,27 +138,27 @@ class KompetensiController extends Controller
 
     public function show_ajax(string $id)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi", [
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan", [
             'uid' => $id
         ]);
 
         if ($response->successful()) {
-            return view('kompetensi.show_ajax', ['kompetensi' => $response->json('data')]);
+            return view('jabatan.show_ajax', ['jabatan' => $response->json('data')]);
         } else {
-            return view('kompetensi.show_ajax', ['kompetensi' => null]);
+            return view('jabatan.show_ajax', ['jabatan' => null]);
         }
     }
 
     public function edit_ajax(string $id)
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kompetensi", [
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan", [
             'uid' => $id
         ]);
 
         if ($response->successful()) {
-            return view('kompetensi.edit_ajax', ['kompetensi' => $response->json('data')]);
+            return view('jabatan.edit_ajax', ['jabatan' => $response->json('data')]);
         } else {
-            return view('kompetensi.edit_ajax', ['kompetensi' => null]);
+            return view('jabatan.edit_ajax', ['jabatan' => null]);
         }
     }
 
@@ -166,7 +167,8 @@ class KompetensiController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
 
             $rules = [
-                'nama_kompetensi' => 'required',
+                'nama_jabatan' => 'required',
+                'is_pic' => 'required'
             ];
 
             // Validate the request
@@ -182,12 +184,12 @@ class KompetensiController extends Controller
 
             $response = Http::withAuthToken()
                 ->withQueryParameters(['uid' => $id])
-                ->put("{$this->apiUrl}/api/kompetensi", $request->all());
+                ->put("{$this->apiUrl}/api/jabatan", $request->all());
 
             if ($response->successful()) {
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data kompetensi berhasil disimpan',
+                    'message' => 'Data jabatan berhasil disimpan',
                 ]);
             } else {
                 return response()->json([

@@ -36,7 +36,7 @@ class AuthController extends Controller
 
                 Cache::put('api_jwt_token', $token, $expiry);
                 $apa = $response->json('data');
-                session(['user_id' => $apa['userId'], 'role' => $apa['role'], 'profil_img' => $apa['profileImage']]);
+                session(['user_id' => $apa['userId'], 'role' => $apa['role'], 'profil_img' => $apa['profileImage'], 'nama' => $apa['nama']]);
 
                 return response()->json([
                     'status' => true,
@@ -57,6 +57,11 @@ class AuthController extends Controller
     public function ForgotPassword()
     {
         return view('auth.ResetPassword'); // Pastikan Anda memiliki view form untuk reset password.
+    }
+
+    public function requestReset()
+    {
+        return view('auth.requestReset');
     }
 
     // public function ResetPassword(Request $request)
@@ -91,4 +96,3 @@ class AuthController extends Controller
         return redirect('login');
     }
 }
-    

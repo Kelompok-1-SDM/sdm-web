@@ -5,13 +5,11 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/manajemen/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Manajemen</button>
-                <a href="{{ env('API_BASE_URL') . '/api/user/export?role=dosen' }}" class="btn btn-sm btn-primary mt-1"><i
-                        class="fa fa-file-excel"></i>
-                    Export Manajemen (Excel)</a>
-                <button onclick="modalAction('{{ url('manajemen/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah</button>
+                @if (session('role') != 'dosen')
+                    <button onclick="modalAction('{{ url('jabatan/create_ajax') }}')"
+                        class="btn btn-sm btn-success mt-1">Tambah</button>
+                @endif
+
             </div>
         </div>
         <div class="card-body">
@@ -41,14 +39,12 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_manajemen">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_jabatan">
                 <thead>
                     <tr>
                         <th>Nomor</th>
-                        <th>NIP</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Image Profile</th>
+                        <th>Nama jabatan</th>
+                        <th>Role</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -65,22 +61,23 @@
     {{-- CDN SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    {{-- DataTables Script --}}
     <script>
         // Modal untuk aksi AJAX
-        function modalAction(url = '') {
-            $('#myModal').load(url, function() {
-                $('#myModal').modal('show');
-            });
-        }
+        // function modalAction(url = '') {
+        //     $('#myModal').load(url, function() {
+        //         $('#myModal').modal('show');
+        //     });
+        // }
 
         // DataTables Server-Side
-        var dataManajemen;
+        var dataJabatan;
         $(document).ready(function() {
-            dataManajemen = $('#table_manajemen').DataTable({
+            dataJabatan = $('#table_jabatan').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
-                    url: "{{ url('manajemen/list') }}",
+                    url: "{{ url('jabatan/list') }}",
                     type: "POST",
                 },
                 columns: [{
@@ -90,41 +87,24 @@
                         searchable: false
                     },
                     {
-                        data: "nip",
+                        data: "namaJabatan",
                         className: "text-center",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "nama",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "email",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "profileImage",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true,
+                        data: 'isPic',
+                        className: 'text-center',
                         render: function(data, type, row) {
-                            if (data) {
-                                return "<img class='direct-chat-img' style='float: none;' src='" +
-                                    data +
-                                    "' alt='message manajemen image'>";
-                            }
-                            return data;
-                        }
-                    },
+                            var badgeClass = row.isPic ? 'badge-success' : 'badge-primary';
+                            return `<small class="badge ${badgeClass}">${data ? 'PIC' : 'Anggota'}</small>`;
+                        },
+                    }, // Jabatan
                     {
                         data: "aksi",
                         className: "text-center",
                         orderable: false,
+                        width: "15%",
                         searchable: false
                     }
                 ]

@@ -59,7 +59,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <button onclick="modalAction('{{ url('/user/' . session('user_id') . '/edit_ajax') }}')"
+            <button onclick="modalAction('{{ url('/' . session('role') . '/' . session('user_id') . '/edit_ajax') }}')"
                 class="btn brand-link">
                 @if (session()->has('profil_img'))
                     <img id="profile-picture" src="{{ session('profil_img') }}" alt="Profile Picture"
@@ -133,8 +133,8 @@
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
     <script>
         function modalAction(url = '') {
-            $('#myModal1').load(url, function() {
-                $('#myModal1').modal('show');
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
             });
         }
 
