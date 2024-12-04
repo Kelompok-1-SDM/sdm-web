@@ -14,7 +14,7 @@ class ManajemenController extends Controller
 
     public function __construct()
     {
-        $this->apiUrl = env('API_BASE_URL', "ini harus url");
+        $this->apiUrl = env('API_BASE_URL', "https://restapi-sdm.lleans.dev");
     }
 
     public function index()
