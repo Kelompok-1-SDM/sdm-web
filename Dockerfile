@@ -1,12 +1,17 @@
 # Stage 1: Builder
-FROM composer:2.6 as builder
+FROM php:8.2-cli as builder
 
-# Install required PHP extensions
+# Install required system dependencies
 RUN apt-get update && apt-get install -y \
+    unzip \
+    git \
     libzip-dev \
     && docker-php-ext-install zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /app
@@ -14,16 +19,13 @@ WORKDIR /app
 # Copy only necessary files for dependency installation
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies with increased memory limit
-RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-dev --optimize-autoloader
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
 # Stage 2: Production
 FROM php:8.2-apache
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Install minimal dependencies
+# Install minimal system dependencies
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     && docker-php-ext-install zip \
@@ -32,6 +34,9 @@ RUN apt-get update && apt-get install -y \
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
+
+# Set working directory
+WORKDIR /var/www/html
 
 # Copy application code
 COPY . .
