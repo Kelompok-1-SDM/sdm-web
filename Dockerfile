@@ -16,7 +16,7 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
-# Copy the entire project to ensure artisan and other files are available
+# Copy application files
 COPY . .
 
 # Install PHP dependencies
@@ -38,11 +38,11 @@ RUN a2enmod rewrite
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application code
-COPY . .
+# Copy application code from the builder
+COPY --from=builder /app /var/www/html
 
-# Copy built dependencies from the builder stage
-COPY --from=builder /app/vendor ./vendor
+# Update Apache's DocumentRoot to point to Laravel's public directory
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 # Set correct permissions
 RUN chown -R www-data:www-data /var/www/html \
