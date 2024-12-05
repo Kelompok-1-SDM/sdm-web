@@ -16,8 +16,8 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
-# Copy only necessary files for dependency installation
-COPY composer.json composer.lock ./
+# Copy the entire project to ensure artisan and other files are available
+COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
