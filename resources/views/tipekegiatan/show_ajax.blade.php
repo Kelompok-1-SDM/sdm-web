@@ -1,4 +1,4 @@
-@empty($kompetensi)
+@empty($tipekegiatan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -26,12 +26,12 @@
             <div class="modal-body">
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tr>
-                        <th>Kompetensi ID</th>
-                        <td>{{ $kompetensi['kompetensiId'] }}</td>
+                        <th>Tipe Kegiatan ID</th>
+                        <td>{{ $tipekegiatan['tipeKegiatanId'] }}</td>
                     </tr>
                     <tr>
                         <th>Nama Kompetensi</th>
-                        <td>{{ $kompetensi['namaKompetensi'] }}</td>
+                        <td>{{ $tipekegiatan['tipeKegiatan'] }}</td>
                     </tr>
                 </table>
             </div>

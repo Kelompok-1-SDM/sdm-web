@@ -48,15 +48,15 @@
             <li class="nav-header">Data Kegiatan</li>
             <li class="nav-item">
                 <a href="{{ url('/kegiatan') }}" class="nav-link {{ $activeMenu == 'kegiatan' ? 'active' : '' }} ">
-                    <i class="nav-icon fas fa-file"></i>
+                    <i class="nav-icon fas fa-clipboard"></i>
                     <p>Kegiatan</p>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/kompetensi') }}"
-                    class="nav-link {{ $activeMenu == 'kompetensi' ? 'active' : '' }} ">
-                    <i class="nav-icon fas fa-graduation-cap"></i>
-                    <p>Kompetensi</p>
+                <a href="{{ url('/tipekegiatan') }}"
+                    class="nav-link {{ $activeMenu == 'tipekegiatan' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-layer-group"></i>
+                    <p>Tipe Kegiatan</p>
                 </a>
             </li>
             <li class="nav-item">

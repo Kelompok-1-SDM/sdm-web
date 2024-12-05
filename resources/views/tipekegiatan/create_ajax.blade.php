@@ -1,18 +1,18 @@
-<form action="{{ url('/kompetensi/store_ajax') }}" method="POST" id="form-tambah">
+<form action="{{ url('/tipekegiatan/store_ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Kompetensi</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Tipe Kegiatan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Nama Kompetensi</label>
-                    <input value="" type="text" name="nama_kompetensi" id="nama_kompetensi" class="form-control"
+                    <label>Nama Tipe Kegiatan</label>
+                    <input value="" type="text" name="tipe_kegiatan" id="tipe_kegiatan" class="form-control"
                         required>
-                    <small id="error-nama_kompetensi" class="error-text form-text text-danger"></small>
+                    <small id="error-tipe_kegiatan" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -27,7 +27,7 @@
     $(document).ready(function() {
         $("#form-tambah").validate({
             rules: {
-                nama_kompetensi: {
+                tipe_kegiatan: {
                     required: true,
                     minlength: 3,
                     maxlength: 255
@@ -46,7 +46,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataKompetensi.ajax.reload();
+                            dataTipeKegiatan.ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
