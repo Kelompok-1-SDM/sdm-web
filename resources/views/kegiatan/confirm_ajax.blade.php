@@ -51,7 +51,7 @@
                         <tr>
                             <th>Tipe kegiatan</th>
                             <td><small
-                                    class="badge {{ $kegiatan['tipeKegiatan'] == 'jti' ? 'badge-success' : 'badge-warning' }}">{{ $kegiatan['tipeKegiatan'] }}</small>
+                                    class="badge {{ strtolower($kegiatan['tipeKegiatan']) == 'jti' ? 'badge-success' : 'badge-warning' }}">{{ $kegiatan['tipeKegiatan'] }}</small>
                             </td>
                         </tr>
                         <tr>

@@ -42,8 +42,9 @@
                     <label for="filterTipeKegiatan">Filter Tipe Kegiatan:</label>
                     <select id="filterTipeKegiatan" class="form-control">
                         <option value="">Semua</option>
-                        <option value="jti">JTI</option>
-                        <option value="non-jti">Non-JTI</option>
+                        @foreach ($tipe_kegiatan as $item)
+                        <option value="{{$item['tipeKegiatanId']}}">{{$item['tipeKegiatan']}}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -107,7 +108,7 @@
                         data: "tipeKegiatan",
                         className: "text-center",
                         render: function(data, type, row) {
-                            return `<small class='badge ${data === 'jti' ? 'badge-success' : 'badge-warning'}'>${data}</small>`;
+                            return `<small class='badge ${data.toLowerCase() === 'jti' ? 'badge-success' : 'badge-warning'}'>${data}</small>`;
                         },
                     },
                     {

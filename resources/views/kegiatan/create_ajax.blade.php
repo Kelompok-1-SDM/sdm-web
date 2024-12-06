@@ -38,13 +38,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tipe_kegiatan">Tipe Kegiatan</label>
-                    <select name="tipe_kegiatan" id="tipe_kegiatan" class="form-control" required>
+                    <label for="tipe_kegiatan_uid">Tipe Kegiatan</label>
+                    <select name="tipe_kegiatan_uid" id="tipe_kegiatan_uid" class="form-control" required>
                         <option value="">- Pilih Tipe Kegiatan -</option>
-                        <option value="jti">JTI</option>
-                        <option value="non-jti">Non-JTI</option>
+                        @foreach ($tipe_kegiatan as $tipeKegiatan)
+                            <option value="{{$tipeKegiatan['tipeKegiatanId']}}">{{$tipeKegiatan['tipeKegiatan']}}</option>
+                        @endforeach
                     </select>
-                    <small id="error-tipe_kegiatan" class="error-text form-text text-danger"></small>
+                    <small id="error-tipe_kegiatan_uid" class="error-text form-text text-danger"></small>
                 </div>
 
                 <div class="form-group">

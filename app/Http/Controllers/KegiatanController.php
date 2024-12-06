@@ -41,12 +41,17 @@ class KegiatanController extends Controller
         ];
         $activeMenu = 'kegiatan';
 
-        return view('kegiatan.index', [
-            'breadcrumb' => $breadcrumb,
-            'page' => $page,
-            //'kegiatan' => $kegiatan, 
-            'activeMenu' => $activeMenu
-        ]);
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan");
+
+        if ($response->successful()) {
+            $data = $response->json('data');
+            return view('kegiatan.index', [
+                'breadcrumb' => $breadcrumb,
+                'page' => $page,
+                'tipe_kegiatan' => $data,
+                'activeMenu' => $activeMenu
+            ]);
+        }
     }
 
     public function list()
@@ -258,7 +263,12 @@ class KegiatanController extends Controller
 
     public function create_ajax()
     {
-        return view('kegiatan.create_ajax');
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan");
+
+        if ($response->successful()) {
+            $data = $response->json('data');
+            return view('kegiatan.create_ajax', ['tipe_kegiatan' => $data]);
+        }
     }
 
     public function store_ajax(Request $request)
@@ -267,7 +277,7 @@ class KegiatanController extends Controller
             // Validation rules
             $rules = [
                 'judul_kegiatan' => 'required',
-                'tipe_kegiatan' => 'required',
+                'tipe_kegiatan_uid' => 'required',
                 'lokasi' => 'required',
                 'tanggal_mulai' => 'required',
                 'tanggal_akhir' => 'required',
@@ -301,11 +311,15 @@ class KegiatanController extends Controller
     public function edit_ajax(Request $request)
     {
         $kegData = json_decode($request->query('data'), true);
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan");
 
         // Render view dengan data yang relevan
-        return view('kegiatan.edit_ajax', [
-            'kegiatan' => $kegData
-        ]);
+        if ($response->successful()) {
+            return view('kegiatan.edit_ajax', [
+                'tipe_kegiatan' => $response->json('data'),
+                'kegiatan' => $kegData
+            ]);
+        }
     }
 
     public function update_ajax(Request $request, string $id)
@@ -314,7 +328,7 @@ class KegiatanController extends Controller
             // Validation rules
             $rules = [
                 'judul_kegiatan' => 'nullable',
-                'tipe_kegiatan' => 'nullable',
+                'tipe_kegiatan_uid' => 'nullable',
                 'lokasi' => 'nullable',
                 'tanggal_mulai' => 'nullable',
                 'tanggal_akhir' => 'nullable',
