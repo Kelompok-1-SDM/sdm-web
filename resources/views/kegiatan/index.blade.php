@@ -108,7 +108,7 @@
                         data: "tipeKegiatan",
                         className: "text-center",
                         render: function(data, type, row) {
-                            return `<small class='badge ${data.toLowerCase() === 'jti' ? 'badge-success' : 'badge-warning'}'>${data}</small>`;
+                            return `<small class='badge ${data?.toLowerCase() === 'jti' ? 'badge-success' : 'badge-warning'}'>${data}</small>`;
                         },
                     },
                     {
