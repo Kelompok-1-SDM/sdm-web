@@ -184,7 +184,7 @@ class UserController extends Controller
         if ($response->successful()) {
             // Retrieve file content and metadata
             $fileContent = $response->body();
-            $fileName = 'Data' . $userType . "_" . date('Y-m-d H:i:s') . ".xlsx";
+            $fileName = 'Data ' . ucfirst($userType) . "_" . date('Y-m-d H:i:s') . ".xlsx";
 
             // Return the file as a response
             return response($fileContent)
