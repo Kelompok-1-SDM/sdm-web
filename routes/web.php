@@ -4,7 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\TipeKegiatanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,10 +48,6 @@ Route::middleware(['jwt.required'])->group(function () {
     Route::get('/{userType}/{id}/edit_ajax', [UserController::class, 'edit_ajax']);
     Route::post('/{userType}/{id}/update_ajax', [UserController::class, 'update_ajax']);
 
-    Route::get('/{userType}/{id}/tambah_kompetensi_ajax', [UserController::class, 'tambah_kompetensi_ajax']);
-    Route::post('/{userType}/{id}/store_kompetensi_ajax', [UserController::class, 'store_kompetensi_ajax']);
-    Route::post('/{userType}/{id}/delete_kompetensi_user', [UserController::class, 'delete_kompetensi_ajax']);
-
     Route::group(['prefix' => 'kegiatan'], function () {
         Route::get('/', [KegiatanController::class, 'index']);
         Route::post('/list', [KegiatanController::class, 'list']);
@@ -70,10 +66,6 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::post('/{id}/anggota_update_ajax', [KegiatanController::class, 'anggota_update_ajax']);
         Route::get('/{id}/anggota_delete_ajax', [KegiatanController::class, 'anggota_confirm_ajax']);
         Route::delete('/{id}/anggota_delete_ajax', [KegiatanController::class, 'anggota_delete_ajax']);
-
-        Route::get('/{id}/tambah_kompetensi_ajax', [KegiatanController::class, 'tambah_kompetensi_ajax']);
-        Route::post('/{id}/store_kompetensi_ajax', [KegiatanController::class, 'store_kompetensi_ajax']);
-        Route::post('/{id}/delete_kompetensi_kegiatan', [KegiatanController::class, 'delete_kompetensi_ajax']);
 
         Route::get('/{id}/lampiran_create_ajax', [KegiatanController::class, 'lampiran_create_ajax']);
         Route::post('/{id}/lampiran_store_ajax', [KegiatanController::class, 'lampiran_store_ajax']);
@@ -100,17 +92,17 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::delete('/{id}/agenda_progress_attachment_delete_ajax', [KegiatanController::class, 'agenda_progress_attachment_delete_ajax']);
     });
 
-    Route::group(['prefix' => 'kompetensi'], function () {
-        Route::get('/', [KompetensiController::class, 'index']);
-        Route::post('/list', [KompetensiController::class, 'list']);
+    Route::group(['prefix' => 'tipekegiatan'], function () {
+        Route::get('/', [TipeKegiatanController::class, 'index']);
+        Route::post('/list', [TipeKegiatanController::class, 'list']);
 
-        Route::get('/create_ajax', [KompetensiController::class, 'create_ajax']);
-        Route::post('/store_ajax', [KompetensiController::class, 'store_ajax']);
-        Route::get('/{id}/delete_ajax', [KompetensiController::class, 'confirm_ajax']);
-        Route::delete('/{id}/delete_ajax', [KompetensiController::class, 'delete_ajax']);
-        Route::get('/{id}/show_ajax', [KompetensiController::class, 'show_ajax']);
-        Route::get('/{id}/edit_ajax', [KompetensiController::class, 'edit_ajax']);
-        Route::post('/{id}/update_ajax', [KompetensiController::class, 'update_ajax']);
+        Route::get('/create_ajax', [TipeKegiatanController::class, 'create_ajax']);
+        Route::post('/store_ajax', [TipeKegiatanController::class, 'store_ajax']);
+        Route::get('/{id}/delete_ajax', [TipeKegiatanController::class, 'confirm_ajax']);
+        Route::delete('/{id}/delete_ajax', [TipeKegiatanController::class, 'delete_ajax']);
+        Route::get('/{id}/show_ajax', [TipeKegiatanController::class, 'show_ajax']);
+        Route::get('/{id}/edit_ajax', [TipeKegiatanController::class, 'edit_ajax']);
+        Route::post('/{id}/update_ajax', [TipeKegiatanController::class, 'update_ajax']);
     });
 
     Route::group(['prefix' => 'jabatan'], function () {

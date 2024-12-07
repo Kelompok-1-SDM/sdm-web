@@ -1,88 +1,55 @@
+# Stage 1: Builder
+FROM php:8.2-cli as builder
 
+# Install required system dependencies
+RUN apt-get update && apt-get install -y \
+    unzip \
+    git \
+    libzip-dev \
+    && docker-php-ext-install zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-FROM ubuntu:latest AS base
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-ENV DEBIAN_FRONTEND noninteractive
+# Set working directory
+WORKDIR /app
 
-# Install dependencies
-RUN apt update
-RUN apt install -y software-properties-common
-RUN add-apt-repository -y ppa:ondrej/php
-RUN apt update
-RUN apt install -y php8.2\
-    php8.2-cli\
-    php8.2-common\
-    php8.2-fpm\
-    php8.2-mysql\
-    php8.2-zip\
-    php8.2-gd\
-    php8.2-mbstring\
-    php8.2-curl\
-    php8.2-xml\
-    php8.2-bcmath\
-    php8.2-pdo
+# Copy application files
+COPY . .
 
-# Install php-fpm
-RUN apt install -y php8.2-fpm php8.2-cli
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Install composer
-RUN apt install -y curl
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Stage 2: Production
+FROM php:8.2-apache
 
-# Install nodejs
-RUN apt install -y ca-certificates gnupg
-RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-ENV NODE_MAJOR 20
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-RUN apt update
-RUN apt install -y nodejs
+# Install minimal system dependencies
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    && docker-php-ext-install zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install nginx
-RUN apt install -y nginx
-RUN echo "\
-    server {\n\
-    listen 80;\n\
-    listen [::]:80;\n\
-    root /var/www/html/public;\n\
-    add_header X-Frame-Options \"SAMEORIGIN\";\n\
-    add_header X-Content-Type-Options \"nosniff\";\n\
-    index index.php;\n\
-    charset utf-8;\n\
-    location / {\n\
-    try_files \$uri \$uri/ /index.php?\$query_string;\n\
-    }\n\
-    location = /favicon.ico { access_log off; log_not_found off; }\n\
-    location = /robots.txt  { access_log off; log_not_found off; }\n\
-    error_page 404 /index.php;\n\
-    location ~ \.php$ {\n\
-    fastcgi_pass unix:/run/php/php8.2-fpm.sock;\n\
-    fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;\n\
-    include fastcgi_params;\n\
-    }\n\
-    location ~ /\.(?!well-known).* {\n\
-    deny all;\n\
-    }\n\
-    }\n" > /etc/nginx/sites-available/default
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
 
-RUN echo "\
-    #!/bin/sh\n\
-    php artisan \
-    echo \"Starting services...\"\n\
-    service php8.2-fpm start\n\
-    nginx -g \"daemon off;\" &\n\
-    echo \"Ready.\"\n\
-    tail -s 1 /var/log/nginx/*.log -f\n\
-    " > /start.sh
-
-COPY . /var/www/html
+# Set working directory
 WORKDIR /var/www/html
 
+# Copy application code from the builder
+COPY --from=builder /app /var/www/html
 
-RUN chown -R www-data:www-data /var/www/html
+# Update Apache's DocumentRoot to point to Laravel's public directory
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-RUN composer install
+# Set correct permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Expose port 80
 EXPOSE 80
 
-CMD ["sh", "/start.sh"]
+# Start Apache server
+CMD ["apache2-foreground"]

@@ -1,4 +1,4 @@
-@empty($kompetensi)
+@empty($tipekegiatan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,44 +11,47 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="button" data-dismiss="modal" class="btn btn-warning">Kembali</button>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/kompetensi/' . $kompetensi['kompetensiId'] . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/tipekegiatan/' . $tipekegiatan['tipeKegiatanId'] . '/update_ajax') }}" method="POST" id="form-edit">
         @csrf
-        @method('DELETE')
+        @method('POST')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Hapus Data Kompetensi</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria label="Close"><span
+                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Tipe Kegiatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <h5><i class="icon fas fa-ban"></i> Konfirmasi !!!</h5>
-                        Apakah Anda ingin menghapus data seperti di bawah ini?
+                    <div class="form-group">
+                        <label>Nama Tipe Kegiatan</label>
+                        <input value="{{ $tipekegiatan['tipeKegiatan'] }}" type="text" name="tipe_kegiatan"
+                            id="tipe_kegiatan" class="form-control">
+                        <small id="error-tipe_kegiatan" class="error-text form-text text-danger"></small>
                     </div>
-                    <table class="table table-sm table-bordered table-striped">
-                        <tr>
-                            <th class="text-right col-3">Nama Kompetensi:</th>
-                            <td class="col-9">{{ $kompetensi['namaKompetensi'] }}</td>
-                        </tr>
-                    </table>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </div>
+        </div>
         </div>
     </form>
     <script>
         $(document).ready(function() {
-            $("#form-delete").validate({
-                rules: {},
+            $("#form-edit").validate({
+                rules: {
+                    tipe_kegiatan: {
+                        minlength: 3,
+                        maxlength: 255
+                    },
+                },
                 submitHandler: function(form) {
                     $.ajax({
                         url: form.action,
@@ -62,7 +65,7 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                dataKompetensi.ajax.reload();
+                                dataTipeKegiatan.ajax.reload();
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

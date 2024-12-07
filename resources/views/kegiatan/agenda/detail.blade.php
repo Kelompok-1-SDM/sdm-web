@@ -104,7 +104,7 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <!-- Progress URL -->
-                            <strong class="text-primary"
+                            <strong class="text-primary" style="cursor: pointer;"
                                 onclick="modalAction('{{ url('kegiatan/agenda_progress_show_ajax?data=' . urlencode(json_encode($progress))) }}')">{{ Str::limit($progress['deskripsiProgress'], 100) }}</strong>
                             <br>
                             <!-- Timestamps -->

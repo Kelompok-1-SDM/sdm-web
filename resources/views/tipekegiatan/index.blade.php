@@ -6,7 +6,7 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             @if (session('role') != 'dosen')
                 <div class="card-tools">
-                    <button onclick="modalAction('{{ url('kompetensi/create_ajax') }}')"
+                    <button onclick="modalAction('{{ url('tipekegiatan/create_ajax') }}')"
                         class="btn btn-sm btn-success mt-1">Tambah</button>
                 </div>
             @endif
@@ -38,11 +38,11 @@
             @endif
 
             {{-- Tabel Data --}}
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_kompetensi">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_tipekegiatan">
                 <thead>
                     <tr>
                         <th>Nomor</th>
-                        <th>Nama kompetensi</th>
+                        <th>Tipe Kegiatan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -69,13 +69,13 @@
         // }
 
         // DataTables Server-Side
-        var dataKompetensi;
+        var dataTipeKegiatan;
         $(document).ready(function() {
-            dataKompetensi = $('#table_kompetensi').DataTable({
+            dataTipeKegiatan = $('#table_tipekegiatan').DataTable({
                 processing: true,
                 serverSide: false,
                 ajax: {
-                    url: "{{ url('kompetensi/list') }}",
+                    url: "{{ url('tipekegiatan/list') }}",
                     type: "POST",
                 },
                 columns: [{
@@ -85,7 +85,7 @@
                         searchable: false
                     },
                     {
-                        data: "namaKompetensi",
+                        data: "tipeKegiatan",
                         className: "text-center",
                         orderable: true,
                         searchable: true
