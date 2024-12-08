@@ -84,12 +84,13 @@
 
                     <div class="form-group">
                         <label for="is_done">Status selesai</label>
-                        <select name="is_done" id="is_done" class="form-control" required>
+                        <select name="is_done" id="is_done" class="form-control" required {{ $kegiatan['isDone'] ? 'disabled' : '' }}>
                             <option value="">- Pilih Status -</option>
                             <option value="true" {{ $kegiatan['isDone'] ? 'selected' : '' }}>Selesai</option>
                             <option value="false" {{ $kegiatan['isDone'] == false ? 'selected' : '' }}>Belum Selesai
                             </option>
                         </select>
+                        <small class="error-text form-text text-danger">*Dengan mengubah ini ke selesai, maka tidak bisa di edit lagi</small>
                         <small id="error-is_done" class="error-text form-text text-danger"></small>
                     </div>
 
