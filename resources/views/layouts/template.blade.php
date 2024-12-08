@@ -45,6 +45,7 @@
     <!-- summernote -->
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/summernote/summernote-bs4.min.css') }}">
 
+
     @stack('css')
 </head>
 
@@ -121,6 +122,13 @@
     <script src="{{ asset('adminlte/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('adminlte/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('adminlte/plugins/datatables-buttons/js/buttons.colvis.min.js') }}"></script>
+
+    <!-- InputMask -->
+    <script src="{{ asset('adminlte/plugins/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('adminlte/plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{{ asset('adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 
     {{-- jQuery validation --}}
     <script src="{{ asset('adminlte/plugins/jquery-validation/jquery.validate.min.js') }}"></script>

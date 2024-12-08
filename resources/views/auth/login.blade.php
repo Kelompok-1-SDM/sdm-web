@@ -56,7 +56,7 @@
                         <!-- /.col -->
                     </div>
                 </form>
-                <a href="{{ url('resetPassword') }}" class="text-center">Lupa Password</a>
+                <a href="{{ url('requestReset') }}" class="text-center">Lupa Password</a>
             </div>
             <!-- /.card-body -->
         </div>

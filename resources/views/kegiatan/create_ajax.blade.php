@@ -19,17 +19,28 @@
 
                 <div class="form-group">
                     <label for="tanggal_mulai">Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control" value=""
-                        required>
+                    <div class="input-group date" id="tanggal_mulai" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" name="tanggal_mulai"
+                            data-target="#tanggal_mulai" />
+                        <div class="input-group-append" data-target="#tanggal_mulai" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
                     <small id="error-tanggal_mulai" class="error-text form-text text-danger"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="tanggal_akhir">Tanggal</label>
-                    <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value=""
-                        required>
+                    <label for="tanggal_akhir">Tanggal Akhir</label>
+                    <div class="input-group date" id="tanggal_akhir" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" name="tanggal_akhir"
+                            data-target="#tanggal_akhir" />
+                        <div class="input-group-append" data-target="#tanggal_akhir" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
                     <small id="error-tanggal_akhir" class="error-text form-text text-danger"></small>
                 </div>
+
 
                 <div class="form-group">
                     <label for="lokasi">Lokasi</label>
@@ -42,7 +53,8 @@
                     <select name="tipe_kegiatan_uid" id="tipe_kegiatan_uid" class="form-control" required>
                         <option value="">- Pilih Tipe Kegiatan -</option>
                         @foreach ($tipe_kegiatan as $tipeKegiatan)
-                            <option value="{{$tipeKegiatan['tipeKegiatanId']}}">{{$tipeKegiatan['tipeKegiatan']}}</option>
+                            <option value="{{ $tipeKegiatan['tipeKegiatanId'] }}">{{ $tipeKegiatan['tipeKegiatan'] }}
+                            </option>
                         @endforeach
                     </select>
                     <small id="error-tipe_kegiatan_uid" class="error-text form-text text-danger"></small>
@@ -74,14 +86,63 @@
 <script>
     $(document).ready(function() {
 
+        $('#tanggal_mulai').datetimepicker({
+            icons: {
+                time: 'far fa-clock'
+            },
+            format: 'MM/DD/YYYY HH:mm'
+        });
+
+
+        $('#tanggal_akhir').datetimepicker({
+            icons: {
+                time: 'far fa-clock'
+            },
+            format: 'MM/DD/YYYY HH:mm'
+        });
+
         // Form submission
         $("#form-create").submit(function(e) {
             e.preventDefault();
             let form = $(this);
+
+            // Convert datetime fields to ISO8601
+            let formData = form.serializeArray(); // Get form data as an array
+            formData.forEach(function(field) {
+                if ((field.name === "tanggal_mulai" || field.name === "tanggal_akhir") && field
+                    .value) {
+                    // Convert the value to a Date object
+                    let date = new Date(field.value);
+
+                    // Adjust the date to UTC
+                    let utcDate = new Date(
+                        Date.UTC(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            date.getDate(),
+                            date.getHours(),
+                            date.getMinutes(),
+                            date.getSeconds(),
+                            date.getMilliseconds()
+                        )
+                    );
+
+                    // Format to ISO8601
+                    field.value = utcDate.toISOString(); // Update to UTC ISO8601 format
+                }
+            });
+
+            // Convert the modified form data array back to an object
+            let convertedData = {};
+            formData.forEach(function(field) {
+                convertedData[field.name] = field.value;
+            });
+
             $.ajax({
                 url: form.attr("action"),
                 type: form.attr("method"),
-                data: form.serialize(),
+                contentType: "application/json", // Use JSON format
+                data: JSON.stringify(convertedData), // Send as JSON
                 success: function(response) {
                     if (response.status) {
                         Swal.fire({

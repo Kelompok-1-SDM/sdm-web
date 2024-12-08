@@ -27,11 +27,11 @@
             <table class="table table-bordered table-striped table-hover table-sm">
                 <tr>
                     <th>Taggal Mulai</th>
-                    <td>{{ date_format(date_create($data['tanggalMulai']), 'd F Y, H:i') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($data['tanggalMulai'])->format('d F Y, H:i') }}</td>
                 </tr>
                 <tr>
                     <th>Taggal Akhir</th>
-                    <td>{{ date_format(date_create($data['tanggalAkhir']), 'd F Y, H:i') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($data['tanggalAkhir'])->format('d F Y, H:i') }}</td>
                 </tr>
                 <tr>
                     <th>Lokasi</th>
@@ -369,7 +369,7 @@
                         </div>
                         <span class="text">${item.namaAgenda}</span>
                         <small class="badge ${badgeClass}">
-                            <i class="far fa-clock"></i> ${agendaDate.toLocaleString()}
+                            <i class="far fa-clock"></i> ${new Date(agendaDate).toISOString().slice(0, 16).replace('T', ' ')}
                         </small>
                         <br>
                         <small class="text-muted">

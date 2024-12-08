@@ -35,10 +35,15 @@
                         <small id="error-nama_agenda" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label>Jadwal Agenda</label>
-                        <input type="date" name="jadwal_agenda" id="jadwal_agenda" class="form-control"
-                            value="{{ $current['jadwalAgenda'] ? \Carbon\Carbon::parse($current['jadwalAgenda'])->format('Y-m-d') : '' }}"
-                            required>
+                        <label for="jadwal_agenda">Tanggal Mulai</label>
+                        <div class="input-group date" id="jadwal_agenda" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input" name="jadwal_agenda"
+                                value="{{ $current['jadwalAgenda'] ? \Carbon\Carbon::parse($current['jadwalAgenda'])->format('m/d/Y H:i') : '' }}"
+                                data-target="#jadwal_agenda" />
+                            <div class="input-group-append" data-target="#jadwal_agenda" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
                         <small id="error-jadwal_agenda" class="error-text form-text text-danger"></small>
                     </div>
                     <div class="form-group">
@@ -67,6 +72,14 @@
     </form>
     <script>
         $(document).ready(function() {
+
+            $('#jadwal_agenda').datetimepicker({
+                icons: {
+                    time: 'far fa-clock'
+                },
+                format: 'MM/DD/YYYY HH:mm'
+            });
+
             $("#form-edit").validate({
                 rules: {
                     jabatan_id: {
@@ -74,10 +87,43 @@
                     }
                 },
                 submitHandler: function(form) {
+                    // Convert datetime fields to ISO8601
+                    let formData = $(form).serializeArray(); // Convert form to jQuery object
+
+                    formData.forEach(function(field) {
+                        if ((field.name === "jadwal_agenda") && field.value) {
+                            // Convert the value to a Date object
+                            let date = new Date(field.value);
+
+                            // Adjust the date to UTC
+                            let utcDate = new Date(
+                                Date.UTC(
+                                    date.getFullYear(),
+                                    date.getMonth(),
+                                    date.getDate(),
+                                    date.getHours(),
+                                    date.getMinutes(),
+                                    date.getSeconds(),
+                                    date.getMilliseconds()
+                                )
+                            );
+
+                            // Format to ISO8601
+                            field.value = utcDate.toISOString(); // Update to UTC ISO8601 format
+                        }
+                    });
+
+                    // Convert the modified form data array back to an object
+                    let convertedData = {};
+                    formData.forEach(function(field) {
+                        convertedData[field.name] = field.value;
+                    });
+
                     $.ajax({
                         url: form.action,
                         type: form.method,
-                        data: $(form).serialize(),
+                        contentType: "application/json", // Use JSON format
+                        data: JSON.stringify(convertedData), // Send as JSON
                         success: function(response) {
                             if (response.status) {
                                 $('#myModal').modal('hide');

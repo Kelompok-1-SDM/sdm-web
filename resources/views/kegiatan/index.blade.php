@@ -43,7 +43,7 @@
                     <select id="filterTipeKegiatan" class="form-control">
                         <option value="">Semua</option>
                         @foreach ($tipe_kegiatan as $item)
-                        <option value="{{$item['tipeKegiatanId']}}">{{$item['tipeKegiatan']}}</option>
+                            <option value="{{ $item['tipeKegiatanId'] }}">{{ $item['tipeKegiatan'] }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -119,18 +119,22 @@
                             var date = new Date(data);
 
                             // Format the date part: "d MMM yyyy"
-                            var day = date.getDate().toString().padStart(2,
-                                '0'); // Ensure two digits for day
-                            var month = date.toLocaleString('default', {
-                                month: 'short'
-                            }); // Abbreviated month
-                            var year = date.getFullYear();
+                            var day = date.getUTCDate().toString().padStart(2,
+                            '0'); // Ensure two digits for day
+
+                            // Array of abbreviated month names
+                            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
+                                'Sep', 'Oct', 'Nov', 'Dec'
+                            ];
+                            var month = months[date.getMonth()]; // Get the abbreviated month name
+
+                            var year = date.getUTCFullYear();
 
                             // Format the time part: "H:m"
-                            var hours = date.getHours().toString().padStart(2,
-                                '0'); // Ensure two digits for hours
-                            var minutes = date.getMinutes().toString().padStart(2,
-                                '0'); // Ensure two digits for minutes
+                            var hours = date.getUTCHours().toString().padStart(2,
+                            '0'); // Ensure two digits for hours
+                            var minutes = date.getUTCMinutes().toString().padStart(2,
+                            '0'); // Ensure two digits for minutes
 
                             // Return the formatted date and time as "d MMM yyyy, H:m"
                             return day + ' ' + month + ' ' + year + ', ' + hours + ':' + minutes;

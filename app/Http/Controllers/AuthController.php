@@ -54,9 +54,30 @@ class AuthController extends Controller
         return redirect('login');
     }
 
-    public function ForgotPassword()
+    public function ForgotPassword(Request $request)
     {
-        return view('auth.ResetPassword'); // Pastikan Anda memiliki view form untuk reset password.
+        return view('auth.ResetPassword', ['token' => $request->token]); // Pastikan Anda memiliki view form untuk reset password.
+    }
+
+    public function ForgotPasswordProcess(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $response = Http::post("{$this->apiUrl}/api/reset-password", $request->all());
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Reset berhasil',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => $response->json('message')
+                ]);
+            }
+        }
+
+        return redirect('login');
     }
 
     public function requestReset()
@@ -64,30 +85,30 @@ class AuthController extends Controller
         return view('auth.requestReset');
     }
 
-    // public function ResetPassword(Request $request)
-    // {
-    //     // Validasi input
-    //     $validator = Validator::make($request->all(), [
-    //         'password' => 'required|string|min:6|confirmed',
-    //     ]);
+    public function requestResetProcess(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $response = Http::post("{$this->apiUrl}/api/request-reset", [
+                'nip' => $request->nip,
+            ]);
 
-    //     if ($validator->fails()) {
-    //         return back()->withErrors($validator)->withInput();
-    //     }
+            if ($response->successful()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Reset berhasil',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => $response->json('message')
+                ]);
+            }
+        }
 
-    //     // Cari user berdasarkan username (atau field unik lainnya)
-    //     $user = User::where('username', $request->username)->first();
+        return redirect('login');
+    }
 
-    //     if ($user) {
-    //         // Update password user
-    //         $user->password = Hash::make($request->password);
-    //         $user->save();
-
-    //         return redirect()->back()->with('status', 'Password berhasil diubah.');
-    //     }
-    // }
-
-    public function logout(Request $request)
+    public function logout()
     {
         Cache::clear('api_jwt_token');
         Cache::clear('user_cache');

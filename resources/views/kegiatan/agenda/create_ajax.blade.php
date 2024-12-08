@@ -15,8 +15,14 @@
                     <small id="error-nama_agenda" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Jadwal Agenda</label>
-                    <input type="date" name="jadwal_agenda" id="jadwal_agenda" class="form-control" required>
+                    <label for="jadwal_agenda">Jadwal Agenda</label>
+                    <div class="input-group date" id="jadwal_agenda" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" name="jadwal_agenda"
+                            data-target="#jadwal_agenda" />
+                        <div class="input-group-append" data-target="#jadwal_agenda" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
                     <small id="error-jadwal_agenda" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
@@ -71,7 +77,15 @@
     $(document).ready(function() {
         let assignedUsers = {};
 
-        // Automatically add or update user on selection
+        // Initialize the datetimepicker
+        $('#jadwal_agenda').datetimepicker({
+            icons: {
+                time: 'far fa-clock'
+            },
+            format: 'MM/DD/YYYY HH:mm'
+        });
+
+        // Add or update user on selection
         $("#userId").on("change", function() {
             let userId = $(this).val();
             let userText = $("#userId option:selected").text();
@@ -86,28 +100,29 @@
             }
 
             if (assignedUsers[userId]) {
-                // Update the existing user's information
-                $(`#user-item-${userId} .badge-jabatan`).text(assignedUsers[userId].jabatanName);
-                $(`#user-item-${userId} .badge-jabatan`).removeClass("badge-primary badge-success");
-                $(`#user-item-${userId} .badge-jabatan`).addClass(
-                    assignedUsers[userId].isPic ? "badge-success" : "badge-primary"
-                );
+                // Update the existing user's badge
+                $(`#user-item-${userId} .badge-jabatan`)
+                    .text(assignedUsers[userId].jabatanName)
+                    .removeClass("badge-primary badge-success")
+                    .addClass(assignedUsers[userId].isPic ? "badge-success" : "badge-primary");
             } else {
-                // Add a new user to the list
-                let isPic = userText.includes("PIC"); // Check if the user is a PIC
-                let jabatanName = userText.split(" - ")[1]; // Extract the jabatan from the user text
+                // Extract jabatan and PIC status
+                let jabatanName = userText.split(" - ")[1] ||
+                "Anggota"; // Default to 'Anggota' if jabatan missing
+                let isPic = userText.toLowerCase().includes("pic");
 
+                // Add the user to the assignedUsers object
                 assignedUsers[userId] = {
                     userId,
                     jabatanName,
                     isPic,
                 };
 
+                // Create the list item
                 let badgeClass = isPic ? "badge-success" :
                 "badge-primary"; // Green for PIC, blue for Anggota
-
                 let listItem = `
-                <li id="user-item-${userId}">
+                <li id="user-item-${userId}" class="list-group-item">
                     <span class="text">${userText.split(" - ")[0]}</span>
                     <small class="badge ${badgeClass} badge-jabatan">${jabatanName}</small>
                     <button type="button" class="btn btn-danger btn-sm float-right remove-user" data-user-id="${userId}">
@@ -125,6 +140,8 @@
         // Remove user from the list
         $(document).on("click", ".remove-user", function() {
             let userId = $(this).data("user-id");
+
+            // Remove the user from the assignedUsers object and the DOM
             delete assignedUsers[userId];
             $(`#user-item-${userId}`).remove();
         });
@@ -142,10 +159,40 @@
                 return;
             }
 
+            // Serialize form data
+            let formData = $(this).serializeArray();
+
+            // Convert datetime fields to ISO8601
+            formData.forEach(function(field) {
+                if (field.name === "jadwal_agenda" && field.value) {
+                    let date = new Date(field.value);
+
+                    // Adjust the date to UTC
+                    let utcDate = new Date(Date.UTC(
+                        date.getFullYear(),
+                        date.getMonth(),
+                        date.getDate(),
+                        date.getHours(),
+                        date.getMinutes(),
+                        date.getSeconds(),
+                        date.getMilliseconds()
+                    ));
+
+                    // Format to ISO8601
+                    field.value = utcDate.toISOString();
+                }
+            });
+
+            // Append assignedUsers to formData
+            formData.push({
+                name: "assignedUsers",
+                value: JSON.stringify(assignedUsers),
+            });
+
             $.ajax({
                 url: $(this).attr("action"),
                 type: $(this).attr("method"),
-                data: $(this).serialize(),
+                data: formData,
                 success: function(response) {
                     if (response.status) {
                         Swal.fire({

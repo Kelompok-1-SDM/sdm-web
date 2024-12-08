@@ -22,10 +22,10 @@ use Illuminate\Support\Facades\Route;
 Route::pattern('id', '[a-zA-Z0-9]{24}');
 Route::pattern('userType', 'admin|manajemen|dosen');
 
-Route::get('resetPassword', [AuthController::class, 'ForgotPassword'])->name('resetPassword');
-Route::post('resetPassword', [AuthController::class, 'ResetPassword']);
+Route::get('resetPassword', [AuthController::class, 'forgotPassword'])->name('resetPassword');
+Route::post('resetPassword', [AuthController::class, 'forgotPasswordProcess']);
 Route::get('requestReset', [AuthController::class, 'requestReset'])->name('requestReset');
-Route::post('requestReset', [AuthController::class, 'requestReset']);
+Route::post('requestReset', [AuthController::class, 'requestResetProcess']);
 Route::middleware(['check.jwt'])->group(function () {
     Route::get('login', [AuthController::class, 'index'])->name('login');
     Route::post('login', [AuthController::class, 'postlogin']);

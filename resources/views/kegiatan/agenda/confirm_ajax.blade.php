@@ -39,7 +39,7 @@
                         <tr>
                             <th class="text-right col-3">Jadwal Agenda:</th>
                             <td class="col-9">
-                                {{ $current['jadwalAgenda'] ? \Carbon\Carbon::parse($current['jadwalAgenda'])->format('Y-m-d') : '' }}
+                                {{ $current['jadwalAgenda'] ? \Carbon\Carbon::parse($current['jadwalAgenda'])->format('d F Y, H:i') : '' }}
                             </td>
                         </tr>
                         <tr>

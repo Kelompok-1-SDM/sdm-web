@@ -27,17 +27,18 @@
             </div>
             <div class="card-body">
                 {{-- <p class="login-box-msg">Sign in to start your session</p> --}}
-                <form action="{{ url('login') }}" method="POST" id="form-login">
+                <form action="{{ url('/resetPassword') }}" method="POST" id="form-login">
                     @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
                     <div class="input-group mb-3">
-                        <input type="password" id="password_baru" name="password_baru" class="form-control"
+                        <input type="password" id="password" name="password" class="form-control"
                             placeholder="Password baru">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
                             </div>
                         </div>
-                        <small id="error-password_baru" class="error-text text-danger"></small>
+                        <small id="error-password" class="error-text text-danger"></small>
                     </div>
                     <div class="input-group mb-3">
                         <input type="password" id="confirm_password" name="confirm_password" class="form-control"
@@ -86,7 +87,7 @@
         $(document).ready(function() {
             $("#form-login").validate({
                 rules: {
-                    password_baru: {
+                    password: {
                         required: true,
                         minlength: 6,
                         maxlength: 20
@@ -95,7 +96,7 @@
                         required: true,
                         minlength: 6,
                         maxlength: 20,
-                        equalTo: "#password_baru"
+                        equalTo: "#password"
                     }
                 },
                 messages: {

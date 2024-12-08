@@ -533,7 +533,7 @@ class KegiatanController extends Controller
                     'message' => 'Agenda berhasil disimpan',
                 ]);
             } else {
-                dd($response->json('data'));
+                dd($response->json());
                 return response()->json([
                     'status'  => false,
                     'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan agenda.'),
@@ -622,8 +622,6 @@ class KegiatanController extends Controller
                 ]);
             }
         }
-
-        return redirect('/');
     }
 
     public function agenda_confirm_ajax(Request $request, string $id)

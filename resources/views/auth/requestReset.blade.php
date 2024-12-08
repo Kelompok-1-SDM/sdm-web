@@ -27,7 +27,7 @@
             </div>
             <div class="card-body">
                 {{-- <p class="login-box-msg">Sign in to start your session</p> --}}
-                <form action="{{ url('login') }}" method="POST" id="form-login">
+                <form action="{{ url('/requestReset') }}" method="POST" id="form-login">
                     @csrf
                     <div class="input-group mb-3">
                         <input type="number" id="nip" name="nip" class="form-control" placeholder="NIP">
@@ -45,6 +45,8 @@
                         </div>
                         <!-- /.col -->
                     </div>
+                    
+                <a href="{{ url('login') }}" class="text-center">Login</a>
                 </form>
             </div>
             <!-- /.card-body -->
@@ -75,22 +77,11 @@
         $(document).ready(function() {
             $("#form-login").validate({
                 rules: {
-                    password_baru: {
+                    nip: {
                         required: true,
-                        minlength: 6,
-                        maxlength: 20
+                        minlength: 4,
+                        // maxlength: 20
                     },
-                    confirm_password: {
-                        required: true,
-                        minlength: 6,
-                        maxlength: 20,
-                        equalTo: "#password_baru"
-                    }
-                },
-                messages: {
-                    confirm_password: {
-                        equalTo: "Password confirmation does not match."
-                    }
                 },
                 submitHandler: function(form) {
                     $.ajax({
@@ -98,16 +89,21 @@
                         type: form.method,
                         data: $(form).serialize(),
                         success: function(response) {
-                            if (response.status) {
+                            if (response.status) { // if successful
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Password berhasil diubah',
-                                    text: 'Anda akan diarahkan ke halaman login.',
+                                    title: 'Berhasil',
+                                    text: response.message,
                                 }).then(function() {
-                                    window.location =
-                                        "{{ url('login') }}"; // Redirect to login page
+                                    // Change the form fields to display the "Check your email" message
+                                    $('#form-login').html(`
+                <div class="alert alert-success text-center">
+                    <h4><i class="fas fa-envelope"></i> Check Your Email</h4>
+                    <p>Please check your email for further instructions to complete the process.</p>
+                </div>
+            `);
                                 });
-                            } else {
+                            } else { // if error
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {
                                     $('#error-' + prefix).text(val[0]);
@@ -119,6 +115,7 @@
                                 });
                             }
                         }
+
                     });
                     return false;
                 },
