@@ -56,7 +56,7 @@ class AuthController extends Controller
 
     public function ForgotPassword(Request $request)
     {
-        return view('auth.ResetPassword', ['token' => $request->token]); // Pastikan Anda memiliki view form untuk reset password.
+        return view('auth.resetPassword', ['token' => $request->token]); // Pastikan Anda memiliki view form untuk reset password.
     }
 
     public function ForgotPasswordProcess(Request $request)
