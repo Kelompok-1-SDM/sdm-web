@@ -1,14 +1,12 @@
 # Stage 1: Builder
-FROM php:8.2-cli as builder
+FROM php:8.2-fpm-alpine AS builder
 
-# Install required system dependencies
-RUN apt-get update && apt-get install -y \
+# Install required dependencies
+RUN apk add --no-cache \
     unzip \
     git \
     libzip-dev \
-    && docker-php-ext-install zip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install zip
 
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
@@ -23,17 +21,14 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Stage 2: Production
-FROM php:8.2-apache
+FROM php:8.2-fpm-alpine
 
-# Install minimal system dependencies
-RUN apt-get update && apt-get install -y \
+# Install minimal dependencies including Nginx and Supervisor
+RUN apk add --no-cache \
     libzip-dev \
-    && docker-php-ext-install zip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+    nginx \
+    supervisor \
+    && docker-php-ext-install zip
 
 # Set working directory
 WORKDIR /var/www/html
@@ -41,15 +36,20 @@ WORKDIR /var/www/html
 # Copy application code from the builder
 COPY --from=builder /app /var/www/html
 
-# Update Apache's DocumentRoot to point to Laravel's public directory
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Copy configuration files
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
 
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Create the log directory for Supervisor
+RUN mkdir -p /var/log/supervisor
+
+# Optimize permission changes
+RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
+&& chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+&& chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Expose port 80
 EXPOSE 80
 
-# Start Apache server
-CMD ["apache2-foreground"]
+# Start Supervisor to manage PHP-FPM and Nginx
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
