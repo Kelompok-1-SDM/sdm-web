@@ -17,7 +17,7 @@
     </div>
 @else
     <form action="{{ url('/kegiatan/' . $id . '/agenda_anggota_delete_ajax/') }}" method="POST" id="form-delete">
-        <input type="hidden" name="uid_user_kegiatan" value="{{ $penugasan['userKegiatanId'] }}">
+        <input type="hidden" name="uid_user_kegiatan" value="{{ $penugasan['userToKegiatanId'] }}">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">

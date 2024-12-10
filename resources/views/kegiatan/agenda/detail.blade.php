@@ -182,7 +182,7 @@
                     }, // Email
                     @if (session('role') != 'dosen' || (isset($data['wasMePic']) && $data['wasMePic']))
                         {
-                            data: 'userKegiatanId',
+                            data: 'userToKegiatanId',
                             className: 'text-center',
                             render: function(data, type, row) {
                                 return `
