@@ -47,8 +47,9 @@
                                 <option value="">- Pilih Dosen -</option>
                                 @foreach ($penugasan as $l)
                                     <option value="{{ $l['userToKegiatanId'] }}">
-                                        {{ $l['nama'] }} - {{ $l['namaJabatan'] }} -
-                                        {{ $l['isPic'] ? 'PIC' : 'Anggota' }}
+                                        {{ $l['nama'] }} - {{ $l['namaJabatan'] }} |
+                                        {{ $l['isPic'] ? 'PIC' : 'Anggota' }} -
+                                        Jumlah agenda {{ $l['agendaCount'] }}
                                     </option>
                                 @endforeach
                             </select>
@@ -108,7 +109,7 @@
             } else {
                 // Extract jabatan and PIC status
                 let jabatanName = userText.split(" - ")[1] ||
-                "Anggota"; // Default to 'Anggota' if jabatan missing
+                    "Anggota"; // Default to 'Anggota' if jabatan missing
                 let isPic = userText.toLowerCase().includes("pic");
 
                 // Add the user to the assignedUsers object
@@ -120,7 +121,7 @@
 
                 // Create the list item
                 let badgeClass = isPic ? "badge-success" :
-                "badge-primary"; // Green for PIC, blue for Anggota
+                    "badge-primary"; // Green for PIC, blue for Anggota
                 let listItem = `
                 <li id="user-item-${userId}" class="list-group-item">
                     <span class="text">${userText.split(" - ")[0]}</span>

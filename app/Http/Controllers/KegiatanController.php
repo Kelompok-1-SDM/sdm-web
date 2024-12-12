@@ -108,8 +108,9 @@ class KegiatanController extends Controller
     public function anggota_create_ajax(string $id)
     {
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", ['role' => 'dosen']);
+        $dosen = collect($response->json('data'))->sortBy('totalJumlahKegiatan')->toArray();
         $responseJabatan = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan", ['role' => 'dosen']);
-        return view('kegiatan.anggota.create_ajax', ['dosen' => $response->json('data'), 'id' => $id, 'jabatan' => $responseJabatan->json('data')]);
+        return view('kegiatan.anggota.create_ajax', ['dosen' => $dosen, 'id' => $id, 'jabatan' => $responseJabatan->json('data')]);
     }
 
     public function anggota_store_ajax(Request $request, string $id)

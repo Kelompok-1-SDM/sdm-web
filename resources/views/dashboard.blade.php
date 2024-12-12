@@ -55,6 +55,94 @@
             </div>
         @endif
 
+
+        @if (session('role') == 'dosen')
+            <!-- Section: Jumlah Tugas Bulan Sekarang -->
+            <div class="row mt-4">
+                <!-- Jumlah Tugas -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white d-flex align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-tasks mr-2"></i> Jumlah Tugas Bulan Ini
+                            </h5>
+                            <span class="badge bg-warning ml-auto p-2">
+                                {{ $dosen['jumlahTugasBulanSekarang']['count'] }} Tugas
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2 Tugas Terbaru -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-clipboard-list mr-2"></i> 2 Tugas Terbaru
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach ($dosen['duaTugasTerbaru'] as $tugas)
+                                    <div class="col-lg-6 col-md-12">
+                                        <div class="card border-info mb-3 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-info">
+                                                    <a href="{{ url('kegiatan/' . $tugas['kegiatanId'] . '/detail') }}"><i
+                                                            class="fas fa-file-alt mr-2"></i> {{ $tugas['judul'] }}</a>
+                                                </h5>
+                                                <br>
+                                                <p class="mb-2">
+                                                    <strong><i class="fas fa-map-marker-alt mr-1"></i> Lokasi:</strong>
+                                                    {{ $tugas['lokasi'] }}
+                                                </p>
+                                                <p class="mb-2">
+                                                    <strong><i class="fas fa-calendar-alt mr-1"></i> Tanggal Mulai:</strong>
+                                                    {{ date('d-m-Y', strtotime($tugas['tanggalMulai'])) }}
+                                                </p>
+                                                <p>
+                                                    <strong><i class="fas fa-info-circle mr-1"></i> Deskripsi:</strong>
+                                                    {{ $tugas['deskripsi'] }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (isset($dosen['tugasBerlangsung']))
+                    <!-- Section: Tugas yang Sedang Berlangsung -->
+                    <div class="col-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title">Tugas yang Sedang Berlangsung</h5>
+                            </div>
+                            <div class="card-body">
+
+                                <h5 class="card-title">{{ $dosen['tugasBerlangsung']['judul'] }}</h5>
+                                <p class="card-text"><strong>Lokasi:</strong> {{ $dosen['tugasBerlangsung']['lokasi'] }}
+                                </p>
+                                <p class="card-text"><strong>Tanggal Mulai:</strong>
+                                    {{ date('d-m-Y', strtotime($dosen['tugasBerlangsung']['tanggalMulai'])) }}</p>
+                                <p class="card-text"><strong>Deskripsi:</strong>
+                                    {{ $dosen['tugasBerlangsung']['deskripsi'] }}
+                                </p>
+                                <p class="card-text"><strong>Jabatan:</strong>
+                                    {{ $dosen['tugasBerlangsung']['namaJabatan'] }}
+                                </p>
+
+
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endif
+
+
+
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
@@ -93,47 +181,6 @@
                         </div><!-- /.card-body -->
                     </div>
                     <!-- /.card -->
-
-                    <!-- Calendar -->
-                    <div class="card bg-gradient-success">
-                        <div class="card-header border-0">
-
-                            <h3 class="card-title">
-                                <i class="far fa-calendar-alt"></i>
-                                Calendar
-                            </h3>
-                            <!-- tools card -->
-                            <div class="card-tools">
-                                <!-- button with a dropdown -->
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-success btn-sm dropdown-toggle"
-                                        data-toggle="dropdown" data-offset="-52">
-                                        <i class="fas fa-bars"></i>
-                                    </button>
-                                    <div class="dropdown-menu" role="menu">
-                                        <a href="#" class="dropdown-item">Add new event</a>
-                                        <a href="#" class="dropdown-item">Clear events</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="#" class="dropdown-item">View calendar</a>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <!-- /. tools -->
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body pt-0">
-                            <!--The calendar -->
-                            <div id="calendar" style="width: 100%"></div>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
                 </section>
             @endif
 
@@ -162,6 +209,52 @@
             </section>
             <!-- right col -->
         </div>
+
+        @if (session('role') != 'dosen')
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-users mr-1"></i> List dosen dan jumah kegiatan
+                            </h3>
+                        </div>
+                        <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                            <div class="row">
+                                @foreach ($dosen as $dosenItem)
+                                    <div class="col-md-4 col-sm-6">
+                                        <div class="card mb-3">
+                                            <div class="row g-0 align-items-center">
+                                                <div class="col-4">
+                                                    <img src="{{ $dosenItem['profileImage'] }}" alt="Profile Image"
+                                                        class="img-fluid rounded-start"
+                                                        style="height: 100px; width: 100px; object-fit: cover;">
+                                                </div>
+                                                <div class="col-8">
+                                                    <div class="card-body p-2">
+                                                        <a href="{{ url('dosen/' . $dosenItem['userId'] . '/detail') }}">
+                                                            <h5 class="card-title mb-1">{{ $dosenItem['nama'] }}</h5>
+                                                        </a>
+                                                        <p class="card-text text-muted mb-1">
+                                                            <small>{{ $dosenItem['nip'] }}</small>
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <span class="badge bg-info">Total Kegiatan:
+                                                                {{ $dosenItem['totalJumlahKegiatan'] }}</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- /.row (main row) -->
     </div><!-- /.container-fluid -->
 
@@ -176,7 +269,7 @@
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
     <script>
         $.widget.bridge('uibutton', $.ui.button)
-    </script> 
+    </script>
     <!-- Bootstrap 4 -->
     <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- ChartJS -->

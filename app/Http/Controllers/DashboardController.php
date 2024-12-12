@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
 {
@@ -22,12 +20,15 @@ class DashboardController extends Controller
             'list' => ['Home', 'Dashboard']
         ];
         if (session('role') != 'dosen') {
+            $responseDos = Http::withAuthToken()->get("{$this->apiUrl}/api/user", ['role' => 'dosen']);
             $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user/homepage-web");
         } else {
+            $responseDos = Http::withAuthToken()->get("{$this->apiUrl}/api/user/homepage-mobile", ['uid' => '']);
             $response = Http::withAuthToken()->withQueryParameters(['uid' => session('user_id')])->get("{$this->apiUrl}/api/user/statistic");
         }
 
         $data = $response->json('data');
+        $dosen = $responseDos->json('data');
 
         $page = (object) [
             'title' => 'Dashboard admin'
@@ -35,6 +36,6 @@ class DashboardController extends Controller
 
         $activeMenu = 'dashboard';
 
-        return view('dashboard', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'data' => $data]);
+        return view('dashboard', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'data' => $data, 'dosen' => $dosen]);
     }
 }

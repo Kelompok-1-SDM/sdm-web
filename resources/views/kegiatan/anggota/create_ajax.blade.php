@@ -16,7 +16,7 @@
                             <select name="userId" id="userId" class="form-control">
                                 <option value="">- Pilih Dosen -</option>
                                 @foreach ($dosen as $l)
-                                    <option value="{{ $l['userId'] }}">{{ $l['nama'] }}</option>
+                                    <option value="{{ $l['userId'] }}">{{ $l['nama'] }} - Jumlah kegiatan {{$l['totalJumlahKegiatan']}}</option>
                                 @endforeach
                             </select>
                             <small id="error-userId" class="error-text form-text text-danger"></small>
