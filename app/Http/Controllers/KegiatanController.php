@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Comment\Doc;
 use Yajra\DataTables\Facades\DataTables;
 
 class KegiatanController extends Controller
@@ -103,6 +105,21 @@ class KegiatanController extends Controller
                 'data' => $data
             ]);
         }
+    }
+
+    public function export_surat(string $id)
+    {
+        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
+            'uid' => $id
+        ]);
+
+        $kegiatan = $response->json('data');
+        $pdf = Pdf::loadView('kegiatan.surat_tugas', ['kegiatan' => $kegiatan]);
+        $pdf->setPaper('a4', 'potrait');
+        $pdf->setOption('isRemoteEnabled', true);
+        $pdf->render();
+
+        return $pdf->stream('Surat Tugas Kegiatan_' . $id . '_' . date('Y-m-d H:i:s') . '.pdf');
     }
 
     public function anggota_create_ajax(string $id)

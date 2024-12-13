@@ -16,7 +16,7 @@ class DashboardController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Dashboard Admin',
+            'title' => 'Dashboard ' . ucfirst   (session('role')),
             'list' => ['Home', 'Dashboard']
         ];
         if (session('role') != 'dosen') {
@@ -31,7 +31,7 @@ class DashboardController extends Controller
         $dosen = $responseDos->json('data');
 
         $page = (object) [
-            'title' => 'Dashboard admin'
+            'title' => 'Dashboard ' . session('role')
         ];
 
         $activeMenu = 'dashboard';

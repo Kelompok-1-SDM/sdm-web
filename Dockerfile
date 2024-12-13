@@ -2,11 +2,9 @@
 FROM php:8.2-fpm-alpine AS builder
 
 # Install required dependencies
-RUN apk add --no-cache \
-    unzip \
-    git \
-    libzip-dev \
-    && docker-php-ext-install zip
+RUN apk add --no-cache unzip git libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-png-dir=/usr/local/bin \
+    && docker-php-ext-install zip gd
 
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
@@ -24,11 +22,9 @@ RUN composer install --no-dev --optimize-autoloader
 FROM php:8.2-fpm-alpine
 
 # Install minimal dependencies including Nginx and Supervisor
-RUN apk add --no-cache \
-    libzip-dev \
-    nginx \
-    supervisor \
-    && docker-php-ext-install zip
+RUN apk add --no-cache unzip git libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-png-dir= \
+    && docker-php-ext-install zip gd
 
 # Set working directory
 WORKDIR /var/www/html
@@ -45,8 +41,8 @@ RUN mkdir -p /var/log/supervisor
 
 # Optimize permission changes
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
-&& chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-&& chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Expose port 80
 EXPOSE 80

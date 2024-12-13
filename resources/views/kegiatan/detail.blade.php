@@ -56,8 +56,9 @@
                 @if (session('role') != 'dosen')
                     <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/anggota_create_ajax') }}')"
                         class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
+                    <a href="{{ url('kegiatan/' . $data['kegiatanId'] . '/surat_tugas') }}" class="btn btn-primary"><i
+                            class="fa fa-file-excel"></i> Generate surat tugas</a>
                 @endif
-
             </div>
         </div>
         <div class="card-body">

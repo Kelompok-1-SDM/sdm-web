@@ -50,6 +50,7 @@ Route::middleware(['jwt.required'])->group(function () {
 
     Route::group(['prefix' => 'kegiatan'], function () {
         Route::get('/', [KegiatanController::class, 'index']);
+        Route::get('/{id}/surat_tugas', [KegiatanController::class, 'export_surat']);
         Route::post('/list', [KegiatanController::class, 'list']);
         Route::get('/{id}/detail', [KegiatanController::class, 'detailKegiatan']);
         Route::get('/create_ajax', [KegiatanController::class, 'create_ajax']);
