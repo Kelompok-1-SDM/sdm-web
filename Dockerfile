@@ -1,13 +1,10 @@
 # Stage 1: Builder
 FROM php:8.2-fpm-alpine AS builder
 
-# Install required dependencies
-RUN apk add --no-cache unzip git libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-png-dir=/usr/local/bin \
-    && docker-php-ext-install zip gd
+# Install required dependencies and other
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+RUN install-php-extensions gd zip @composer
 
 # Set working directory
 WORKDIR /app
@@ -22,9 +19,9 @@ RUN composer install --no-dev --optimize-autoloader
 FROM php:8.2-fpm-alpine
 
 # Install minimal dependencies including Nginx and Supervisor
-RUN apk add --no-cache unzip git libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-png-dir= \
-    && docker-php-ext-install zip gd
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+RUN install-php-extensions gd zip
 
 # Set working directory
 WORKDIR /var/www/html
