@@ -19,8 +19,9 @@ RUN composer install --no-dev --optimize-autoloader
 FROM php:8.2-fpm-alpine
 
 # Install minimal dependencies including Nginx and Supervisor
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN apk add --no-cache nginx supervisor
 
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions gd zip
 
 # Set working directory
