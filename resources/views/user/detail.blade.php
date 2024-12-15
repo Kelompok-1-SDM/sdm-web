@@ -84,11 +84,13 @@
 
                 <div class="row mb-2">
                     <div class="col-md-3">
-                        <label for="filterTipeKegiatan">Filter tipe kegiatan:</label>
+                        <label for="filterTipeKegiatan">Filter Tipe Kegiatan:</label>
                         <select id="filterTipeKegiatan" class="form-control">
                             <option value="">Semua</option>
-                            <option value="jti">JTI</option>
-                            <option value="non-jti">Non JTI</option>
+                            @foreach ($tipe_kegiatan as $item)
+                                <option value="{{ $item['tipeKegiatan'] }}">{{ $item['tipeKegiatan'] }} |
+                                    {{ $item['isJti'] ? 'JTI' : 'Non-JTI' }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -112,7 +114,7 @@
             </div>
         </div>
     @endempty
-    
+
     {{-- {{dd($statistik)}} --}}
 
     @empty($statistik)
@@ -248,23 +250,14 @@
             @endif
 
 
+            // Dropdown filter for Tipe Kegiatan
             $('#filterTipeKegiatan').on('change', function() {
-                var filterValue = $(this).val(); // Get selected filter value
-
-                // Clear all custom filters
-                $.fn.dataTable.ext.search = [];
-
-                if (filterValue !== "") {
-                    // Add a custom filter for the selected value
-                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                        var tipeKegiatan = data[2]
-                            .trim(); // Get raw column data (trim to avoid extra spaces)
-                        return tipeKegiatan === filterValue; // Show rows matching the filter
-                    });
+                var filterValue = $(this).val(); // Get the filter value
+                if (filterValue === "") {
+                    dataKegiatan.column(2).search("").draw(); // Clear the filter
+                } else {
+                    dataKegiatan.column(2).search(filterValue).draw(); // Apply filter to column 3
                 }
-
-                // Redraw the table to apply filters
-                dataKegiatan.draw();
             });
 
             @empty($statistik)

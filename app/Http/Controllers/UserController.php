@@ -55,6 +55,7 @@ class UserController extends Controller
         $response = Http::withAuthToken()->get("{$this->apiUrl}/api/user", [
             'uid' => $id
         ]);
+        $responseTipe = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan");
         $responseKegiatan = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan", [
             'uid_user' => $id
         ]);
@@ -77,6 +78,7 @@ class UserController extends Controller
                 'breadcrumb' => $breadcrumb,
                 'activeMenu' => 'mbuh',
                 'user' => $response->json('data'),
+                'tipeKegiatan' => $responseTipe->json('data'),
                 'statistik' => $userType == 'dosen' ? $responseStats->json('data') : null,
                 'userType' => $userType,
                 'kegiatan' => $responseKegiatan->json('data')
