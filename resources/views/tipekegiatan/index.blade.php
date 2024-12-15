@@ -43,6 +43,7 @@
                     <tr>
                         <th>Nomor</th>
                         <th>Tipe Kegiatan</th>
+                        <th>JTI</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -90,6 +91,14 @@
                         orderable: true,
                         searchable: true
                     },
+                    {
+                        data: 'isJti',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            var badgeClass = row.isJti ? 'badge-success' : 'badge-primary';
+                            return `<small class="badge ${badgeClass}">${data ? 'JTI' : 'Non-JTI'}</small>`;
+                        },
+                    }, // Jabatan
                     {
                         data: "aksi",
                         className: "text-center",

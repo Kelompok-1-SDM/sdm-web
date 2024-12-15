@@ -6,7 +6,8 @@
             <h3 class="card-title">
                 {{ $data['judul'] }}
                 <small
-                    class='badge ml-2 {{ $data['tipeKegiatan'] === 'jti' ? 'badge-success' : 'badge-warning' }}'>{{ $data['tipeKegiatan'] }}</small>
+                    class='badge ml-2 {{ $data['isJti'] ? 'badge-success' : 'badge-warning' }}'>{{ $data['tipeKegiatan'] }} |
+                    {{ $data['isJti'] ? 'JTI' : 'Non-JTI' }}</small>
             </h3>
             <div class="card-tools">
                 @if (session('role') != 'dosen')
@@ -51,13 +52,33 @@
 
     <div class="card">
         <div class="card-header">
+            <h3 class="card-title">Progress Kegiatan</h3>
+
+            @if (session('role') != 'dosen' || $isPic)
+                <div class="card-tools">
+                    <button
+                        onclick="modalAction('{{ url('kegiatan/edit_progress_ajax?data=' . urlencode(json_encode(array_diff_key($data, array_flip(['lampiran', 'agenda', 'users']))))) }}')"
+                        class="btn btn-sm btn-warning mt-1">Edit</button>
+                </div>
+            @endif
+
+        </div>
+        <div class="card-body">
+            <p>{{ $data['progress'] }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
             <h3 class="card-title">Dosen yang ditugaskan</h3>
             <div class="card-tools">
-                @if (session('role') != 'dosen')
+                @if (session('role') != 'dosen' || ($isPic && !$data['isJti']))
                     <button onclick="modalAction('{{ url('kegiatan/' . $data['kegiatanId'] . '/anggota_create_ajax') }}')"
                         class="btn btn-sm btn-primary mt-1">Tambah Anggota</button>
-                    <a href="{{ url('kegiatan/' . $data['kegiatanId'] . '/surat_tugas') }}" class="btn btn-primary"><i
-                            class="fa fa-file-excel"></i> Generate surat tugas</a>
+                    @if (session('role') != 'dosen')
+                        <a href="{{ url('kegiatan/' . $data['kegiatanId'] . '/surat_tugas') }}" class="btn btn-primary"><i
+                                class="fa fa-file-excel"></i> Generate surat tugas</a>
+                    @endif
                 @endif
             </div>
         </div>
@@ -107,7 +128,7 @@
                         <th class="text-center">Nama</th>
                         <th class="text-center">Email</th>
                         <th class="text-center">Jabatan</th>
-                        @if (session('role') != 'dosen')
+                        @if (session('role') != 'dosen' || ($isPic && !$data['isJti']))
                             <th class="text-center">Aksi</th>
                         @endif
 
@@ -218,6 +239,7 @@
     <script>
         var usersData = @json($data['users']);
         var kegiatanId = @json($data['kegiatanId']);
+        var userId = @json(session('user_id'))
 
         var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
@@ -257,11 +279,14 @@
                             return `<small class="badge ${badgeClass}">${data} - ${row.isPic ? 'PIC' : 'Anggota'}</small>`;
                         },
                     }, // Jabatan
-                    @if (session('role') != 'dosen')
+                    @if (session('role') != 'dosen' || ($isPic && !$data['isJti']))
                         {
                             data: 'userId',
                             className: 'text-center',
                             render: function(data, type, row) {
+                                if (row.userId == userId) {
+                                    return ``
+                                }
                                 return `
                         <button class="btn btn-sm btn-warning" onclick="modalAction('${baseUrl}/kegiatan/${kegiatanId}/anggota_edit_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Edit</button>
                         <button class="btn btn-sm btn-danger" onclick="modalAction('${baseUrl}/kegiatan/${kegiatanId}/anggota_delete_ajax?data=${encodeURIComponent(JSON.stringify(row))}')">Hapus</button>`;

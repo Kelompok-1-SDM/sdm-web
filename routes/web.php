@@ -56,8 +56,10 @@ Route::middleware(['jwt.required'])->group(function () {
         Route::get('/create_ajax', [KegiatanController::class, 'create_ajax']);
         Route::post('/store_ajax', [KegiatanController::class, 'store_ajax']);
         Route::get('/edit_ajax', [KegiatanController::class, 'edit_ajax']);
+        Route::get('/edit_progress_ajax', [KegiatanController::class, 'edit_progress_ajax']);
         Route::get('/delete_ajax', [KegiatanController::class, 'confirm_ajax']);
         Route::post('/{id}/update_ajax', [KegiatanController::class, 'update_ajax']);
+        Route::post('/{id}/update_progress_ajax', [KegiatanController::class, 'update_progress_ajax']);
         Route::delete('/{id}/delete_ajax', [KegiatanController::class, 'delete_ajax']);
 
         Route::get('/anggota_show_ajax', [KegiatanController::class, 'anggota_show_ajax']);

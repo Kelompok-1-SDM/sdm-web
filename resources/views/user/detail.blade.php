@@ -112,6 +112,26 @@
             </div>
         </div>
     @endempty
+    
+    {{-- {{dd($statistik)}} --}}
+
+    @empty($statistik)
+    @else
+        <section class="col-lg">
+            <div class="card bg-gradient-white">
+                <div class="card-header border-0">
+                    <h3 class="card-title text-dark">
+                        <i class="fas fa-th mr-1"></i>
+                        Jumlah Kegiatan Per-Tahun
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <canvas class="chart" id="line-chart"
+                        style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+            </div>
+        </section>
+    @endempty
 
     {{-- Modal untuk Ajax --}}
     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
@@ -122,10 +142,18 @@
     {{-- CDN SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ asset('adminlte/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- ChartJS -->
+    <script src="{{ asset('adminlte/plugins/chart.js/Chart.min.js') }}"></script>
+
 
     {{-- DataTables Script --}}
     <script>
         var kegiatanData = @json($kegiatan);
+        const data = @json($statistik);
         var baseUrl = "{{ url('/') }}"; // This sets the base URL globally
         // Modal untuk aksi AJAX
         // function modalAction(url = '') {
@@ -238,6 +266,74 @@
                 // Redraw the table to apply filters
                 dataKegiatan.draw();
             });
+
+            @empty($statistik)
+            @else
+                const ctxJumlahKegiatan = document.getElementById('line-chart');
+                if (ctxJumlahKegiatan) {
+
+                    // Ensure jumlahKegiatan is not null and contains data
+                    const kegiatanData = data.jumlahKegiatan || [];
+
+                    // Group and sum jumlahKegiatan by year
+                    const kegiatanByYear = kegiatanData.reduce((acc, item) => {
+                        acc[item.year] = (acc[item.year] || 0) + item.jumlahKegiatan;
+                        return acc;
+                    }, {});
+
+                    // Extract years and sums
+                    const years = Object.keys(kegiatanByYear);
+                    const kegiatanCount = Object.values(kegiatanByYear);
+
+                    if (years.length > 0) {
+                        // Chart color
+                        const barColor = 'rgba(255, 99, 132, 0.8)'; // Soft red
+
+                        // Render chart
+                        new Chart(ctxJumlahKegiatan.getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: years,
+                                datasets: [{
+                                    label: 'Jumlah Kegiatan per Tahun',
+                                    data: kegiatanCount,
+                                    backgroundColor: barColor,
+                                    borderColor: 'rgba(255, 99, 132, 1)', // Dark red border
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            color: '#333'
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            color: '#333'
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            color: '#333'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        // Fallback for no data
+                        ctxJumlahKegiatan.innerHTML =
+                            '<p style="color: #333; text-align: center;">No data available</p>';
+                    }
+                }
+            @endempty
         });
     </script>
 @endpush

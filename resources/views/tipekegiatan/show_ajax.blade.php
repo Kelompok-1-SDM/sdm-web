@@ -30,8 +30,14 @@
                         <td>{{ $tipekegiatan['tipeKegiatanId'] }}</td>
                     </tr>
                     <tr>
-                        <th>Nama Kompetensi</th>
+                        <th>Tipe Kegiatan</th>
                         <td>{{ $tipekegiatan['tipeKegiatan'] }}</td>
+                    </tr>
+                    <tr>
+                        <th>JTI</th>
+                        <td><small
+                                class="badge {{ strtolower($tipekegiatan['isJti']) ? 'badge-success' : 'badge-primary' }}">{{ $tipekegiatan['isJti'] ? 'JTI' : 'Non-Jti' }}</small>
+                        </td>
                     </tr>
                 </table>
             </div>

@@ -14,6 +14,16 @@
                         required>
                     <small id="error-tipe_kegiatan" class="error-text form-text text-danger"></small>
                 </div>
+
+                <div class="form-group">
+                    <label for="is_jti">JTI</label>
+                    <select name="is_jti" id="is_jti" class="form-control" required>
+                        <option value="false">- Pilih Status -</option>
+                        <option value="true">JTI</option>
+                        <option value="false">Non-JTI</option>
+                    </select>
+                    <small id="error-is_jti" class="error-text form-text text-danger"></small>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -31,6 +41,9 @@
                     required: true,
                     minlength: 3,
                     maxlength: 255
+                },
+                is_jti: {
+                    required: true
                 },
             },
             submitHandler: function(form) {

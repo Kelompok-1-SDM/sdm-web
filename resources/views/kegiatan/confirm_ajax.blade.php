@@ -51,7 +51,8 @@
                         <tr>
                             <th>Tipe kegiatan</th>
                             <td><small
-                                    class="badge {{ strtolower($kegiatan['tipeKegiatan']) == 'jti' ? 'badge-success' : 'badge-warning' }}">{{ $kegiatan['tipeKegiatan'] }}</small>
+                                    class="badge {{ strtolower($kegiatan['isJti']) ? 'badge-success' : 'badge-primary' }}">{{ $kegiatan['tipeKegiatan'] }}
+                                    | {{ $kegiatan['isJti'] ? 'JTI' : 'Non-Jti' }}</small>
                             </td>
                         </tr>
                         <tr>
@@ -88,7 +89,14 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
+                                // Go back to the previous page
                                 window.history.back();
+
+                                // Reload the page after a short delay (e.g., 500 milliseconds)
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 500); // 500 ms delay
+
                             } else {
                                 $('.error-text').text('');
                                 $.each(response.msgField, function(prefix, val) {

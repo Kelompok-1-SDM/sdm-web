@@ -64,6 +64,8 @@ class KegiatanController extends Controller
             $response = Http::withAuthToken()->get("{$this->apiUrl}/api/kegiatan");
         }
 
+        // dd($response->json());
+
         if ($response->successful()) {
             $data = $response->json('data');
             return DataTables::of($data)
@@ -281,11 +283,20 @@ class KegiatanController extends Controller
 
     public function create_ajax()
     {
-        $response = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan");
+        if (session('role') == 'dosen') {
+            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan", ['is_jti' => false]);
+            $responseJabatan = Http::withAuthToken()->get("{$this->apiUrl}/api/jabatan", ['is_pic' => true]);
+        } else {
+            $response = Http::withAuthToken()->get("{$this->apiUrl}/api/tipekegiatan");
+        }
+
 
         if ($response->successful()) {
             $data = $response->json('data');
-            return view('kegiatan.create_ajax', ['tipe_kegiatan' => $data]);
+            return view('kegiatan.create_ajax', [
+                'tipe_kegiatan' => $data,
+                'jabatan' => session('role') == 'dosen' ? $responseJabatan->json('data') : null
+            ]);
         }
     }
 
@@ -300,9 +311,9 @@ class KegiatanController extends Controller
                 'tanggal_mulai' => 'required',
                 'tanggal_akhir' => 'required',
                 'deskripsi' => 'required',
-                'is_done' => 'required'
+                'is_done' => 'required',
+                'uid_jabatan' => 'nullable'
             ];
-
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
@@ -316,11 +327,16 @@ class KegiatanController extends Controller
             // Send data to external API to update 'kegiatan'
             $response = Http::withAuthToken()
                 ->post("{$this->apiUrl}/api/kegiatan/", $request->all());
-
+            
             if ($response->successful()) {
                 return response()->json([
                     'status' => true,
                     'message' => 'Data kegiatan berhasil disimpan.',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Error saat memasukkan data, ' . $response->json('message'),
                 ]);
             }
         }
@@ -338,6 +354,15 @@ class KegiatanController extends Controller
                 'kegiatan' => $kegData
             ]);
         }
+    }
+
+    public function edit_progress_ajax(Request $request)
+    {
+        $kegData = json_decode($request->query('data'), true);
+        // Render view dengan data yang relevan
+        return view('kegiatan.edit_progress_ajax', [
+            'kegiatan' => $kegData
+        ]);
     }
 
     public function update_ajax(Request $request, string $id)
@@ -386,6 +411,45 @@ class KegiatanController extends Controller
         }
     }
 
+    public function update_progress_ajax(Request $request, string $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            // Validation rules
+            $rules = [
+                'progress' => 'required'
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal.',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            // Send data to external API to update 'kegiatan'
+            $response = Http::withAuthToken()
+                ->withQueryParameters([
+                    'uid' => $id
+                ])
+                ->put("{$this->apiUrl}/api/kegiatan/", $request->all());
+
+            if ($response->successful()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data kegiatan berhasil diperbarui.',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Gagal memperbarui data kegiatan.',
+                    'errors' => $response->json('errors'),
+                ]);
+            }
+        }
+    }
 
     public function confirm_ajax(Request $request)
     {
@@ -551,7 +615,7 @@ class KegiatanController extends Controller
                     'message' => 'Agenda berhasil disimpan',
                 ]);
             } else {
-                dd($response->json());
+                // dd($response->json());
                 return response()->json([
                     'status'  => false,
                     'message' => $response->json('message', 'Terjadi kesalahan saat menyimpan agenda.'),

@@ -4,7 +4,8 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Kegiatan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Kegiatan
+                    {{ session('role') == 'dosen' ? 'Non-JTI' : '' }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -53,7 +54,8 @@
                     <select name="tipe_kegiatan_uid" id="tipe_kegiatan_uid" class="form-control" required>
                         <option value="">- Pilih Tipe Kegiatan -</option>
                         @foreach ($tipe_kegiatan as $tipeKegiatan)
-                            <option value="{{ $tipeKegiatan['tipeKegiatanId'] }}">{{ $tipeKegiatan['tipeKegiatan'] }}
+                            <option value="{{ $tipeKegiatan['tipeKegiatanId'] }}">{{ $tipeKegiatan['tipeKegiatan'] }} |
+                                {{ $tipeKegiatan['isJti'] ? 'JTI' : 'Non-JTI' }}
                             </option>
                         @endforeach
                     </select>
@@ -75,6 +77,21 @@
                     <textarea name="deskripsi" id="deskripsi" class="form-control" rows="3" required></textarea>
                     <small id="error-deskripsi" class="error-text form-text text-danger"></small>
                 </div>
+
+                @if (session('role') == 'dosen')
+                    <div class="form-group">
+                        <label>Jabatan anda di Kegiatan</label>
+                        <select name="uid_jabatan" id="uid_jabatan" class="form-control">
+                            <option value="">- Pilih Jabatan -</option>
+                            @foreach ($jabatan as $l)
+                                <option value="{{ $l['jabatanId'] }}">{{ $l['namaJabatan'] }} -
+                                    {{ $l['isPic'] ? 'PIC' : 'Anggota' }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-danger">*Jika anda saja yang menjadi anggota dari jti, silahkan pilih jabatan anggota non-jti yang ber-PIC</small>
+                        <small id="error-uid_jabatan" class="error-text form-text text-danger"></small>
+                    </div>
+                @endif
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>

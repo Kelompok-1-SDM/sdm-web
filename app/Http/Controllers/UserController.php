@@ -59,6 +59,14 @@ class UserController extends Controller
             'uid_user' => $id
         ]);
 
+        if ($userType == 'dosen') {
+            $responseStats = Http::withAuthToken()->get("{$this->apiUrl}/api/user/statistic", [
+                'uid' => $id
+            ]);
+        }
+
+        // dd($responseStats);
+
         $breadcrumb = (object) [
             'title' => 'Detail ' . ucfirst($userType),
             'list' => ['Data Pengguna', ucfirst($userType), 'Detail ' . ucfirst($userType)]
@@ -69,6 +77,7 @@ class UserController extends Controller
                 'breadcrumb' => $breadcrumb,
                 'activeMenu' => 'mbuh',
                 'user' => $response->json('data'),
+                'statistik' => $userType == 'dosen' ? $responseStats->json('data') : null,
                 'userType' => $userType,
                 'kegiatan' => $responseKegiatan->json('data')
             ]);

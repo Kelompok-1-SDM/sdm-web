@@ -16,7 +16,8 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/tipekegiatan/' . $tipekegiatan['tipeKegiatanId'] . '/delete_ajax') }}" method="POST" id="form-delete">
+    <form action="{{ url('/tipekegiatan/' . $tipekegiatan['tipeKegiatanId'] . '/delete_ajax') }}" method="POST"
+        id="form-delete">
         @csrf
         @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -35,6 +36,12 @@
                         <tr>
                             <th class="text-right col-3">Nama Tipe Kegiatan:</th>
                             <td class="col-9">{{ $tipekegiatan['tipeKegiatan'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>JTI</th>
+                            <td><small
+                                    class="badge {{ strtolower($tipekegiatan['isJti']) ? 'badge-success' : 'badge-primary' }}">{{ $tipekegiatan['isJti'] ? 'JTI' : 'Non-Jti' }}</small>
+                            </td>
                         </tr>
                     </table>
                 </div>

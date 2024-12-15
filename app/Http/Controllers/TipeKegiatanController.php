@@ -68,6 +68,7 @@ class TipeKegiatanController extends Controller
 
             $rules = [
                 'tipe_kegiatan' => 'required',
+                'is_jti' => 'required'
             ];
 
             // Validate the request
@@ -82,7 +83,8 @@ class TipeKegiatanController extends Controller
             }
 
             $response = Http::withAuthToken()->post("{$this->apiUrl}/api/tipekegiatan", [
-                'nama_tipe_kegiatan' => $request->tipe_kegiatan
+                'nama_tipe_kegiatan' => $request->tipe_kegiatan,
+                'is_jti' => $request->is_jti
             ]);
             if ($response->successful()) {
                 return response()->json([
@@ -169,6 +171,7 @@ class TipeKegiatanController extends Controller
 
             $rules = [
                 'tipe_kegiatan' => 'required',
+                'is_jti' => 'required'
             ];
 
             // Validate the request
@@ -185,7 +188,8 @@ class TipeKegiatanController extends Controller
             $response = Http::withAuthToken()
                 ->withQueryParameters(['uid' => $id])
                 ->put("{$this->apiUrl}/api/tipekegiatan", [
-                    'nama_tipe_kegiatan' => $request->tipe_kegiatan
+                    'nama_tipe_kegiatan' => $request->tipe_kegiatan,
+                    'is_jti' => $request->is_jti
                 ]);
 
             if ($response->successful()) {

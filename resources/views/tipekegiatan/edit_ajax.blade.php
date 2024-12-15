@@ -16,7 +16,8 @@
         </div>
     </div>
 @else
-    <form action="{{ url('/tipekegiatan/' . $tipekegiatan['tipeKegiatanId'] . '/update_ajax') }}" method="POST" id="form-edit">
+    <form action="{{ url('/tipekegiatan/' . $tipekegiatan['tipeKegiatanId'] . '/update_ajax') }}" method="POST"
+        id="form-edit">
         @csrf
         @method('POST')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -33,7 +34,20 @@
                             id="tipe_kegiatan" class="form-control">
                         <small id="error-tipe_kegiatan" class="error-text form-text text-danger"></small>
                     </div>
+
+                    <div class="form-group">
+                        <label for="is_jti">Status selesai</label>
+                        <select name="is_jti" id="is_jti" class="form-control" required>
+                            <option value="">- Pilih Status -</option>
+                            <option value="true" {{ $tipekegiatan['isJti'] ? 'selected' : '' }}>JTI</option>
+                            <option value="false" {{ !$tipekegiatan['isJti'] ? 'selected' : '' }}>Non-JTI
+                            </option>
+                        </select>
+                        <small id="error-is_jti" class="error-text form-text text-danger"></small>
+                    </div>
+
                 </div>
+
 
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -51,6 +65,9 @@
                         minlength: 3,
                         maxlength: 255
                     },
+                    is_jti: {
+                        required: true
+                    }
                 },
                 submitHandler: function(form) {
                     $.ajax({
