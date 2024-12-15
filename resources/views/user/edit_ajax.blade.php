@@ -28,24 +28,26 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="role" value="{{ $userType }}">
-                    <div class="form-group">
-                        <label>Nip</label>
-                        <input value="{{ $user['nip'] }}" type="number" name="nip" id="nip"
-                            class="form-control">
-                        <small id="error-nip" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Nama</label>
-                        <input value="{{ $user['nama'] }}" type="text" name="nama" id="nama"
-                            class="form-control">
-                        <small id="error-nama" class="error-text form-text text-danger"></small>
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input value="{{ $user['email'] }}" type="email" name="email" id="email"
-                            class="form-control">
-                        <small id="error-email" class="error-text form-text text-danger"></small>
-                    </div>
+                    @if (session('role') != 'dosen')
+                        <div class="form-group">
+                            <label>Nip</label>
+                            <input value="{{ $user['nip'] }}" type="number" name="nip" id="nip"
+                                class="form-control">
+                            <small id="error-nip" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Nama</label>
+                            <input value="{{ $user['nama'] }}" type="text" name="nama" id="nama"
+                                class="form-control">
+                            <small id="error-nama" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input value="{{ $user['email'] }}" type="email" name="email" id="email"
+                                class="form-control">
+                            <small id="error-email" class="error-text form-text text-danger"></small>
+                        </div>
+                    @endif
                     <div class="form-group">
                         <label>Foto Profil</label>
                         <input type="file" name="file" id="file" class="form-control">
@@ -88,17 +90,20 @@
                     role: {
                         required: true
                     },
-                    nip: {
-                        minlength: 3,
-                        maxlength: 24
-                    },
-                    nama: {
-                        minlength: 3,
-                        maxlength: 255
-                    },
-                    email: {
-                        maxlength: 255
-                    },
+                    @if (session('role') != 'dosen')
+                        nip: {
+                            minlength: 3,
+                            maxlength: 24
+                        },
+                        nama: {
+                            minlength: 3,
+                            maxlength: 255
+                        },
+                        email: {
+                            maxlength: 255
+                        },
+                    @endif
+
                     password: {
                         minlength: 6,
                         maxlength: 20
