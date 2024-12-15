@@ -78,7 +78,7 @@ class UserController extends Controller
                 'breadcrumb' => $breadcrumb,
                 'activeMenu' => 'mbuh',
                 'user' => $response->json('data'),
-                'tipeKegiatan' => $responseTipe->json('data'),
+                'tipe_kegiatan' => $responseTipe->json('data'),
                 'statistik' => $userType == 'dosen' ? $responseStats->json('data') : null,
                 'userType' => $userType,
                 'kegiatan' => $responseKegiatan->json('data')
