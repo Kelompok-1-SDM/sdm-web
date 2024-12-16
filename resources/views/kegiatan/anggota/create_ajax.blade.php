@@ -82,7 +82,6 @@
                 <li id="user-item-${userId}">
                     <span class="text">${userName}</span>
                     <small class="badge badge-secondary badge-jabatan">${jabatanName}</small>
-                    <button type="button" class="btn btn-warning btn-sm float-right edit-user" data-user-id="${userId}" data-user-jabatan="${jabatan}">Edit</button>
                     <button type="button" class="btn btn-danger btn-sm float-right remove-user mr-2" data-user-id="${userId}">Remove</button>
                     <input type="hidden" name="assigned_users[${userId}][userId]" value="${userId}">
                     <input type="hidden" name="assigned_users[${userId}][jabatan]" value="${jabatan}">
@@ -110,20 +109,20 @@
         });
 
         // Edit user in the list
-        $(document).on("click", ".edit-user", function() {
-            let userId = $(this).data("user-id");
-            let userRole = assignedUsers[userId].jabatan;
+        // $(document).on("click", ".edit-user", function() {
+        //     let userId = $(this).data("user-id");
+        //     let userRole = assignedUsers[userId].jabatan;
 
-            // Update the selectors with the selected user's data
-            $("#userId").val(userId).change();
-            $("#jabatan").val(userRole).change();
+        //     // Update the selectors with the selected user's data
+        //     $("#userId").val(userId).change();
+        //     $("#jabatan").val(userRole).change();
 
-            // Optionally highlight the item being edited (visual feedback)
-            $(`#user-item-${userId}`).addClass("bg-warning");
-            setTimeout(() => {
-                $(`#user-item-${userId}`).removeClass("bg-warning");
-            }, 1500);
-        });
+        //     // Optionally highlight the item being edited (visual feedback)
+        //     $(`#user-item-${userId}`).addClass("bg-warning");
+        //     setTimeout(() => {
+        //         $(`#user-item-${userId}`).removeClass("bg-warning");
+        //     }, 1500);
+        // });
 
         // Form submission
         $("#form-tambah").submit(function(e) {
