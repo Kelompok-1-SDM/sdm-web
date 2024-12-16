@@ -64,7 +64,7 @@
 
         </div>
         <div class="card-body">
-            <p>{{ $data['progress'] }}</p>
+            <p>{!! nl2br(e($data['progress'])) !!}</p>
         </div>
     </div>
 
