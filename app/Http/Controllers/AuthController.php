@@ -34,7 +34,7 @@ class AuthController extends Controller
                 $token = $response->json('data.token');
                 $expiry = now()->addSeconds(config('services.api.token_lifetime', 604800));
 
-                Cache::put('api_jwt_token', $token, $expiry);
+                session(['api_jwt_token' => $token, 'token_expiry' => $expiry]);
                 $apa = $response->json('data');
                 session(['user_id' => $apa['userId'], 'role' => $apa['role'], 'profil_img' => $apa['profileImage'], 'nama' => $apa['nama']]);
 
@@ -110,8 +110,6 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Cache::clear('api_jwt_token');
-        Cache::clear('user_cache');
         Session::flush();
 
         return redirect('login');

@@ -18,7 +18,7 @@ class EnsureJwtTokenExists
     public function handle(Request $request, Closure $next): Response
     {
         // Check if JWT token exists in cache
-        if (Cache::has('api_jwt_token')) {
+        if (session('api_jwt_token') != null) {
             return $next($request); // Allow access
         }
 

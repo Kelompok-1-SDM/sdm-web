@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
         Http::macro('withAuthToken', function ()  {
             // Retrieve the token from cache
-            $token = Cache::get('api_jwt_token');
+            $token = session('api_jwt_token');
 
             return Http::withHeaders([
                 'Authorization' => $token ? "Bearer $token" : '',

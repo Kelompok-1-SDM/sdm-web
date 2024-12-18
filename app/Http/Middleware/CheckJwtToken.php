@@ -18,7 +18,7 @@ class CheckJwtToken
     public function handle($request, Closure $next)
     {
         // Check if the token exists and has not expired
-        if (Cache::has('api_jwt_token')) {
+        if (session('api_jwt_token') !== null) {
             return Redirect::route('home'); // Adjust to your home route
         }
 
